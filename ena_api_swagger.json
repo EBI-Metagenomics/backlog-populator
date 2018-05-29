@@ -1,0 +1,936 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.2",
+    "title": " "
+  },
+  "host": "www.ebi.ac.uk",
+  "basePath": "/ena/portal/api",
+  "tags": [
+    {
+      "name": "Portal API",
+      "description": "Facade for consuming ENA Portal data services"
+    }
+  ],
+  "paths": {
+    "/controlledVocab": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Get a list of available values for a controlled vocabulary field.",
+        "operationId": "getControlledVocabUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "field",
+            "in": "query",
+            "description": "Field name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/count": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Count rows matching search parameters",
+        "operationId": "countUsingGET",
+        "consumes": [
+          "text/plain",
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "result",
+            "in": "query",
+            "description": "The result type (data set) to search against. Is mandatory.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "A set of search conditions joined by logical operators (AND, OR, NOT) and bound by double quotes. If none supplied, the full result set will be returned.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dataPortal",
+            "in": "query",
+            "description": "The data portal ID. Defaults to 'ena'.",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ena",
+              "faang",
+              "metagenome",
+              "pathogen"
+            ]
+          },
+          {
+            "name": "dccDataOnly",
+            "in": "query",
+            "description": "Whether to limit the search to only DCC records. By default, all public data is also included in the search.",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "includeMetagenomes",
+            "in": "query",
+            "description": "Whether to include public metagenome data in the search. By default, these are not included. Note that any metagenome data associated with a DCC hub will always be included in a search against that DCC.",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/doc": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Download the documentation as a PDF file.",
+        "operationId": "downloadDocUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/filereport": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Get file report from warehouse search",
+        "operationId": "fileReportUsingGET",
+        "consumes": [
+          "text/plain",
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "result",
+            "in": "query",
+            "description": "The result type (data set) to search against. Is mandatory.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "accession",
+            "in": "query",
+            "description": "Accession",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "A list of fields (comma separated) to be returned in the result. If none supplied, the accession and ftp information for fastq,submitted and sra files will be returned.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "How many records to skip from the beginning in the results. Default value is 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of records to retrieve. Default value is 100,000. If the full result set is to be fetched, the limit should be set to 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "What format the results should be returned as: TSV (Tab Separated Values) or JSON. By default, a TSV report is provided.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "Whether to download the result as a file, rather than read it from the stream. By default, this is false.",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/links/sample": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Sample links",
+        "operationId": "doSampleLinksUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "accession",
+            "in": "query",
+            "description": "Sample accession",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "result",
+            "in": "query",
+            "description": "The result type of links.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "How many records to skip from the beginning in the results. Default value is 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of records to retrieve. Default value is 100,000. If the full result set is to be fetched, the limit should be set to 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "What format the results should be returned as: TSV (Tab Separated Values) or JSON. By default, a TSV report is provided.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/links/study": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Study links",
+        "operationId": "doStudyLinksUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "accession",
+            "in": "query",
+            "description": "Sample accession",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "result",
+            "in": "query",
+            "description": "The result type of links.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "How many records to skip from the beginning in the results. Default value is 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of records to retrieve. Default value is 100,000. If the full result set is to be fetched, the limit should be set to 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "What format the results should be returned as: TSV (Tab Separated Values) or JSON. By default, a TSV report is provided.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/links/taxon": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Taxonomy links",
+        "operationId": "doTaxonLinksUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "accession",
+            "in": "query",
+            "description": "Taxon Id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "result",
+            "in": "query",
+            "description": "The result type of links.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "How many records to skip from the beginning in the results. Default value is 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of records to retrieve. Default value is 100,000. If the full result set is to be fetched, the limit should be set to 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "subtree",
+            "in": "query",
+            "description": "Inlcude Subtree",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "What format the results should be returned as: TSV (Tab Separated Values) or JSON. By default, a TSV report is provided.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/results": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Get a list of available result types (data sets) to search against.",
+        "operationId": "getResultsUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "dataPortal",
+            "in": "query",
+            "description": "Data portal Id",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "ena",
+              "faang",
+              "metagenome",
+              "pathogen"
+            ]
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/returnFields": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Get a list of fields that can be returned for a result type.",
+        "operationId": "getReturnFieldsUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "dataPortal",
+            "in": "query",
+            "description": "Data portal Id",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ena",
+              "faang",
+              "metagenome",
+              "pathogen"
+            ]
+          },
+          {
+            "name": "result",
+            "in": "query",
+            "description": "Result",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Perform a warehouse search",
+        "operationId": "searchUsingGET",
+        "consumes": [
+          "text/plain",
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "result",
+            "in": "query",
+            "description": "The result type (data set) to search against. Is mandatory.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "savedSearch",
+            "in": "query",
+            "description": "The id to download the results of a previously submitted search. If this parameter is set, all additional parameters are ignored.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "A set of search conditions joined by logical operators (AND, OR, NOT) and bound by double quotes. If none supplied, the full result set will be returned.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "A list of fields (comma separated) to be returned in the result. If none supplied, the accession and description/title of the main result object will be returned.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortFields",
+            "in": "query",
+            "description": "A list of fields (comma separated) in the order of which the results should be sorted.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "How many records to skip from the beginning in the results. Default value is 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of records to retrieve. Default value is 100,000. If the full result set is to be fetched, the limit should be set to 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "dataPortal",
+            "in": "query",
+            "description": "The data portal ID. Defaults to 'ena'.",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ena",
+              "faang",
+              "metagenome",
+              "pathogen"
+            ]
+          },
+          {
+            "name": "dccDataOnly",
+            "in": "query",
+            "description": "Whether to limit the search to only DCC records. By default, all public data is also included in the search.",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "includeMetagenomes",
+            "in": "query",
+            "description": "Whether to include public metagenome data in the search. By default, these are not included. Note that any metagenome data associated with a DCC hub will always be included in a search against that DCC.",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "What format the results should be returned as: TSV (Tab Separated Values) or JSON. By default, a TSV report is provided.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "Whether to download the result as a file, rather than read it from the stream. By default, this is false.",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Submit search and be notified via email when search result is ready for downloading. Mandatory if fields=all is set.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Perform a warehouse search with POST",
+        "operationId": "searchPostUsingPOST",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "result",
+            "in": "formData",
+            "description": "The result type (data set) to search against. Is mandatory.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "formData",
+            "description": "A set of search conditions joined by logical operators (AND, OR, NOT) and bound by double quotes. If none supplied, the full result set will be returned.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fields",
+            "in": "formData",
+            "description": "A list of fields (comma separated) to be returned in the result. If none supplied, the accession and description/title of the main result object will be returned.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortFields",
+            "in": "formData",
+            "description": "A list of fields (comma separated) in the order of which the results should be sorted.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "formData",
+            "description": "How many records to skip from the beginning in the results. Default value is 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "formData",
+            "description": "The maximum number of records to retrieve. Default value is 100,000. If the full result set is to be fetched, the limit should be set to 0.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "dataPortal",
+            "in": "formData",
+            "description": "The data portal ID. Defaults to 'ena'.",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ena",
+              "faang",
+              "metagenome",
+              "pathogen"
+            ]
+          },
+          {
+            "name": "dccDataOnly",
+            "in": "formData",
+            "description": "Whether to limit the search to only DCC records. By default, all public data is also included in the search.",
+            "required": false,
+            "type": "boolean",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "name": "includeMetagenomes",
+            "in": "formData",
+            "description": "Whether to include public metagenome data in the search. By default, these are not included. Note that any metagenome data associated with a DCC hub will always be included in a search against that DCC.",
+            "required": false,
+            "type": "boolean",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "Submit search and be notified via email when search result is ready for downloading. Mandatory if fields=all is set.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "savedSearch",
+            "in": "formData",
+            "description": "The id to download the results of a previously submitted search. If this parameter is set, all additional parameters are ignored.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "formData",
+            "description": "What format the results should be returned as: TSV (Tab Separated Values) or JSON. By default, a TSV report is provided.",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "json",
+              "tsv"
+            ]
+          },
+          {
+            "name": "download",
+            "in": "formData",
+            "description": "Whether to download the result as a file, rather than read it from the stream. By default, this is false.",
+            "required": false,
+            "type": "boolean",
+            "enum": [
+              "true",
+              "false"
+            ]
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/searchFields": {
+      "get": {
+        "tags": [
+          "Portal API"
+        ],
+        "summary": "Get a list of searchable fields for a result type.",
+        "operationId": "getSearchFieldsUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "name": "dataPortal",
+            "in": "query",
+            "description": "Data portal Id",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ena",
+              "faang",
+              "metagenome",
+              "pathogen"
+            ]
+          },
+          {
+            "name": "result",
+            "in": "query",
+            "description": "Result",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          },
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic"
+    }
+  }
+}
