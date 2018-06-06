@@ -1,0 +1,2 @@
+tqdm=4.23.4
+mysql-connector-python-rf=2.2.2
