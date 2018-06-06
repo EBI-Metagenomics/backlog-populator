@@ -5,24 +5,23 @@ python:
   - '3.5'
   - '3.6'
 env:
-  - EMG_CONFIG=$TRAVIS_BUILD_DIR/travis/config.yaml
+  - DJANGO_BACKLOG_DEFAULT_CONFIG=$TRAVIS_BUILD_DIR/travis/config.yaml
 
 before_install:
-  # Create tests database using EMG api's django model
-  - pip3 install --upgrade pip setuptools
-  - pip3 install "git+git://github.com/ola-t/django-rest-framework-json-api@develop#egg=djangorestframework-jsonapi"
-  - pip3 install "git+git://github.com/EBI-metagenomics/emgapi@develop#egg=emgcli"
 
-  - mysql -e 'CREATE DATABASE emg;'
-  - emgcli migrate
+  - pip3 install pytest
+  - pip3 install pytest-cov
+  - pip3 install -U git+git://github.com/EBI-Metagenomics/emg-backlog-schema.git
+  - mysql -e 'CREATE DATABASE emg_backlog_2;'
+  - emgbacklog migrate --database=default
 
 install:
   - $TRAVIS_BUILD_DIR/travis/create_ena_creds.sh
-  - pip install -r requirements.txt
-  - pip install "flake8==3.4" "pycodestyle==2.3.1" pep8-naming
+  - pip3 install -r requirements.txt
+  - pip3 install "flake8==3.4" "pycodestyle==2.3.1" pep8-naming
 
 # before_script:
   # - flake8 -v .
 
 script:
-  - py.tests --rootdir $TRAVIS_BUILD_DIR/tests
+  - pytest --cov=src tests/
