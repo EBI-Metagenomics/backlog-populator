@@ -114,17 +114,17 @@ class TestBacklogHandler(TestCase):
             self.assertEquals(0, len(RunAssembly.objects.using(db_name).all()))
 
     def test_insert_study(self):
-        emg_backlog_handler.save_study(db_name, self.study_data)
+        emg_backlog_handler.create_study_obj(self.study_data).save()
         self.assert_study_in_db(self.study_data)
 
     def test_insert_run_without_cached_study(self):
-        emg_backlog_handler.save_run(self.ena_handler, db_name, {}, self.run_data)
+        emg_backlog_handler.create_run_obj(self.ena_handler, db_name, {}, self.run_data).save()
         self.assert_study_in_db(self.study_data)
         self.assert_run_in_db(self.run_data)
 
     def test_insert_run_with_cached_study(self):
-        emg_backlog_handler.save_run(self.ena_handler, db_name, {}, self.run_data)
-        emg_backlog_handler.save_run(self.ena_handler, db_name, {}, self.run2_data)
+        emg_backlog_handler.create_run_obj(self.ena_handler, db_name, {}, self.run_data).save()
+        emg_backlog_handler.create_run_obj(self.ena_handler, db_name, {}, self.run2_data).save()
         self.assert_study_in_db(self.study_data)
         self.assert_run_in_db(self.run_data)
         self.assert_run_in_db(self.run2_data)
@@ -133,33 +133,27 @@ class TestBacklogHandler(TestCase):
         study_invalid_dates = deepcopy(self.study_data)
         study_invalid_dates['first_public'] = 'invalid_date'
         study_invalid_dates['last_updated'] = 'invalid_date'
-        emg_backlog_handler.save_study(db_name, study_invalid_dates)
+        emg_backlog_handler.create_study_obj(study_invalid_dates).save()
         study_invalid_dates['first_public'] = datetime.now().date()
         study_invalid_dates['last_updated'] = datetime.now().date()
         self.assert_study_in_db(study_invalid_dates)
 
     def test_insert_assembly_without_cached_run(self):
-        emg_backlog_handler.save_assembly(self.ena_handler, db_name, {}, {}, self.assembly_data)
-        self.assert_assembly_in_db(self.assembly_data)
-        self.assertEquals(1, len(RunAssembly.objects.using(db_name).all()))
-        self.assertEquals(1, len(Run.objects.using(db_name).all()))
+        emg_backlog_handler.create_assembly(self.ena_handler, db_name, {}, self.assembly_data).save()
+        self.assert_assembly_in_db(self.assembly_data, False)
         self.assertEquals(1, len(Study.objects.using(db_name).all()))
 
     def test_insert_assembly_with_cached_run(self):
-        emg_backlog_handler.save_assembly(self.ena_handler, db_name, {}, {}, self.assembly_data)
-        emg_backlog_handler.save_assembly(self.ena_handler, db_name, {}, {}, self.assembly2_data)
+        emg_backlog_handler.create_assembly(self.ena_handler, db_name, {}, self.assembly_data).save()
+        emg_backlog_handler.create_assembly(self.ena_handler, db_name, {}, self.assembly2_data).save()
         self.assert_study_in_db(self.study_data)
-        self.assert_run_in_db(self.run_data)
-        self.assert_assembly_in_db(self.assembly_data)
-        self.assert_assembly_in_db(self.assembly2_data)
-        self.assertEquals(2, len(RunAssembly.objects.using(db_name).all()))
-        self.assertEquals(1, len(Run.objects.using(db_name).all()))
+        self.assert_assembly_in_db(self.assembly_data, False)
+        self.assert_assembly_in_db(self.assembly2_data, False)
         self.assertEquals(1, len(Study.objects.using(db_name).all()))
 
     def test_insert_assembly_without_run(self):
-        emg_backlog_handler.save_assembly(self.ena_handler, db_name, {}, {}, self.assembly_data_no_run)
+        emg_backlog_handler.create_assembly(self.ena_handler, db_name, {}, self.assembly_data_no_run).save()
         self.assert_assembly_in_db(self.assembly_data_no_run, False)
-        self.assertEquals(0, len(Run.objects.using(db_name).all()))
         self.assertEquals(1, len(Study.objects.using(db_name).all()))
 
     def tearDown(self):

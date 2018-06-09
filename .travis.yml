@@ -8,7 +8,7 @@ env:
   - DJANGO_BACKLOG_DEFAULT_CONFIG=$TRAVIS_BUILD_DIR/travis/config.yaml
 
 before_install:
-
+  - pip3 install codacy-coverage
   - pip3 install pytest
   - pip3 install pytest-cov
   - pip3 install -U git+git://github.com/EBI-Metagenomics/emg-backlog-schema.git
@@ -25,3 +25,5 @@ install:
 
 script:
   - pytest --cov=src tests/
+  - coverage xml -o $TRAVIS_BUILD_DIR/coverage.xml
+  - python-codacy-coverage -r $TRAVIS_BUILD_DIR/coverage.xml

@@ -23,7 +23,7 @@ def get_date(data, field):
     return date
 
 
-def save_study(database, data):
+def create_study_obj(data):
     # TODO Missing fields: first created, pubmed, webin
     # TODO First created / last updated are auto-set by django model
     logging.info('Saving study {}'.format(data['secondary_study_accession']))
@@ -35,63 +35,56 @@ def save_study(database, data):
               public=get_date(data, 'first_public') <= datetime.now().date(),
               ena_last_update=get_date(data, 'last_updated'),
               )
-    s.save(using=database)
     # except django.db.IntegrityError:
     #     logging.warning('Django IntegrityError occured when retrieving {}', data['study_accession'])
     #     s = Study.objects.using(database).get(primary_accession=data['study_accession'])
     return s
 
 
-def save_run(ena_api, database, studies, data):
+def create_run_obj(ena_api, database, studies, data):
     logging.info('Saving run {} to study {}'.format(data['run_accession'], data['secondary_study_accession']))
 
     study_acc = data['secondary_study_accession']
-    if study_acc not in studies:
-        studies[study_acc] = fetch_study(ena_api, database, study_acc)
-    r = Run(study=studies[study_acc],
-            primary_accession=data['run_accession'],
-            base_count=data['base_count'],
-            read_count=data['read_count'],
-            instrument_platform=sanitise_string(data['instrument_platform']),
-            instrument_model=sanitise_string(data['instrument_model']),
-            library_strategy=sanitise_string(data['library_strategy']),
-            library_layout=sanitise_string(data['library_layout']),
-            ena_last_update=get_date(data, 'last_updated'),
-            biome_validated=False
-            )
-    r.save(using=database)
+    try:
+        if study_acc not in studies.keys():
+            logging.info('Study not found in cache, fetching...')
+            studies[study_acc] = fetch_study(ena_api, database, study_acc)
+        r = Run(study=studies[study_acc],
+                primary_accession=data['run_accession'],
+                base_count=data['base_count'],
+                read_count=data['read_count'],
+                instrument_platform=sanitise_string(data['instrument_platform']),
+                instrument_model=sanitise_string(data['instrument_model']),
+                library_strategy=sanitise_string(data['library_strategy']),
+                library_layout=sanitise_string(data['library_layout']),
+                ena_last_update=get_date(data, 'last_updated'),
+                biome_validated=False
+                )
+    except Exception as e:
+        logging.error(e)
+        r = None
     return r
 
 
-def save_assembly(ena_api, database, studies, runs, data):
+def create_assembly(ena_api, database, studies, data):
     logging.info('Saving analysis {}'.format(data['analysis_accession']))
 
     study_acc = data['secondary_study_accession']
-    run_accession = data['analysis_alias']
     if study_acc not in studies:
+        logging.info('Study {} not found in cache, fetching...'.format(study_acc))
         studies[study_acc] = fetch_study(ena_api, database, study_acc)
     a = Assembly(study=studies[study_acc],
                  primary_accession=data['analysis_accession'],
                  ena_last_update=get_date(data, 'last_updated'),
                  )
-    a.save()
-
-    if run_accession not in runs:
-        try:
-            runs[run_accession] = fetch_run(ena_api, database, studies, run_accession)
-        except ValueError as e:
-            logging.warning('Could not find a run for assembly {} with alias {}'.format(data['analysis_accession'],
-                                                                                        run_accession))
-        else:
-            ra = RunAssembly(assembly=a, run=runs[run_accession])
-            ra.save()
     return a
 
 
 def fetch_study(ena_api, database, secondary_study_accession):
     backlog_study = Study.objects.using(database).filter(secondary_accession=secondary_study_accession)
     if len(backlog_study) == 0:
-        study = save_study(database, ena_api.get_study(secondary_study_accession))
+        study = create_study_obj(ena_api.get_study(secondary_study_accession))
+        study.save()
     else:
         study = backlog_study[0]
     return study
@@ -101,7 +94,8 @@ def fetch_run(ena_api, database, studies, run_accession):
     backlog_run = Run.objects.using(database).filter(primary_accession=run_accession)
     if len(backlog_run) == 0:
         run_data = ena_api.get_run(run_accession)
-        run = save_run(ena_api, database, studies, run_data)
+        run = create_run_obj(ena_api, database, studies, run_data)
+        run.save()
     else:
         run = backlog_run[0]
     return run
