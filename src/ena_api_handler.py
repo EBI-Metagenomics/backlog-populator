@@ -27,14 +27,6 @@ def load_ena_credentials(path):
         raise e
 
 
-def row2obj(headers, row):
-    if len(row) == 0:
-        return {}
-    row_data = row.split('\t')
-    entry = {header: value for header, value in zip(headers, row_data)}
-    return entry
-
-
 class EnaApiHandler:
     def __init__(self, ena_credentials_path, extra_options=None):
         try:
@@ -47,7 +39,7 @@ class EnaApiHandler:
         self.api = swagger_client.PortalAPIApi(swagger_client.ApiClient(self.configuration))
         self.default_options = {
             'data_portal': 'metagenome',
-            'format': 'tsv'
+            'format': 'json'
         }
         if extra_options:
             self.default_options.update(extra_options)
@@ -59,23 +51,18 @@ class EnaApiHandler:
                                                 **self.default_options)
         if len(raw_results) == 0:
             return {}
-        raw_headers, *rows = raw_results.split('\n')
-        headers = raw_headers.split('\t')
-        logging.info('Found {} studies to update'.format(len(rows)))
-        data = {entry['secondary_study_accession']: entry for entry in
-                filter(None, [row2obj(headers, row) for row in rows])}
-        return data
+        results = {entry['secondary_study_accession']: entry for entry in raw_results}
+        return results
 
     def get_study(self, secondary_study_accession):
-        raw_results = self.api.search_using_get('study',
-                                                query='secondary_study_accession=' + secondary_study_accession,
-                                                fields=study_fetch_fields,
-                                                **self.default_options)
-        if len(raw_results) == 0:
+        results = self.api.search_using_get('study',
+                                            query='secondary_study_accession=' + secondary_study_accession,
+                                            fields=study_fetch_fields,
+                                            **self.default_options)
+        if len(results) == 0:
             raise ValueError('Study {} does not exist in ENA'.format(secondary_study_accession))
-        raw_headers, *rows = raw_results.split('\n')
-        headers = raw_headers.split('\t')
-        return row2obj(headers, rows[0])
+        print(results)
+        return results[0]
 
     def get_updated_runs(self, cutoff_date):
         raw_results = self.api.search_using_get('read_run',
@@ -84,22 +71,18 @@ class EnaApiHandler:
                                                 **self.default_options)
         if len(raw_results) == 0:
             return {}
-        raw_headers, *rows = raw_results.split('\n')
-        headers = raw_headers.split('\t')
-        logging.info('Found {} runs to update'.format(len(rows)))
-        data = {entry['run_accession']: entry for entry in filter(None, [row2obj(headers, row) for row in rows])}
-        return data
+
+        results = {entry['run_accession']: entry for entry in raw_results}
+        return results
 
     def get_run(self, run_accession):
-        raw_results = self.api.search_using_get('read_run',
-                                                query='run_accession=' + run_accession,
-                                                fields=run_fetch_fields,
-                                                **self.default_options)
-        if len(raw_results) == 0:
+        results = self.api.search_using_get('read_run',
+                                            query='run_accession=' + run_accession,
+                                            fields=run_fetch_fields,
+                                            **self.default_options)
+        if len(results) == 0:
             raise ValueError('Run {} does not exist in ENA'.format(run_accession))
-        raw_headers, *rows = raw_results.split('\n')
-        headers = raw_headers.split('\t')
-        return row2obj(headers, rows[0])
+        return results[0]
 
     def get_updated_assemblies(self, cutoff_date):
         raw_results = self.api.search_using_get('analysis',
@@ -110,8 +93,9 @@ class EnaApiHandler:
                                                 **self.default_options)
         if len(raw_results) == 0:
             return {}
-        raw_headers, *rows = raw_results.split('\n')
-        headers = raw_headers.split('\t')
-        logging.info('Found {} assemblies to update'.format(len(rows)))
-        data = {entry['analysis_accession']: entry for entry in filter(None, [row2obj(headers, row) for row in rows])}
-        return data
+        # print(2, '\n' in raw_results)
+        # raw_headers, *rows = raw_results.split('\n')
+        # headers = raw_headers.split('\t')
+        # logging.info('Found {} assemblies to update'.format(len(rows)))
+        results = {entry['analysis_accession']: entry for entry in raw_results}
+        return results

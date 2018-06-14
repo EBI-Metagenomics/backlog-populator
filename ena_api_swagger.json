@@ -591,7 +591,7 @@
           "application/json"
         ],
         "produces": [
-          "*/*"
+          "application/json"
         ],
         "parameters": [
           {
@@ -701,7 +701,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "type": "string"
+              "type": "object"
             }
           },
           "401": {

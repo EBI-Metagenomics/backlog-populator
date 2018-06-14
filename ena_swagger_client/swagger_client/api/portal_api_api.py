@@ -1254,7 +1254,7 @@ class PortalAPIApi(object):
         :param str format: What format the results should be returned as: TSV (Tab Separated Values) or JSON. By default, a TSV report is provided.
         :param bool download: Whether to download the result as a file, rather than read it from the stream. By default, this is false.
         :param str email: Submit search and be notified via email when search result is ready for downloading. Mandatory if fields=all is set.
-        :return: str
+        :return: object
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -1287,7 +1287,7 @@ class PortalAPIApi(object):
         :param str format: What format the results should be returned as: TSV (Tab Separated Values) or JSON. By default, a TSV report is provided.
         :param bool download: Whether to download the result as a file, rather than read it from the stream. By default, this is false.
         :param str email: Submit search and be notified via email when search result is ready for downloading. Mandatory if fields=all is set.
-        :return: str
+        :return: object
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -1352,7 +1352,7 @@ class PortalAPIApi(object):
         body_params = None
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
-            ['*/*'])  # noqa: E501
+            ['application/json'])  # noqa: E501
 
         # HTTP header `Content-Type`
         header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
@@ -1369,7 +1369,7 @@ class PortalAPIApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='str',  # noqa: E501
+            response_type='object',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),

@@ -1,24 +1,36 @@
 from unittest import TestCase
 import pytest
+import yaml
 from datetime import datetime
 import os
 from src import ena_api_handler
 from ..utils import ena_creds_path, write_creds_file, sync_time, ena_api_handler_options
 
 
-class TestEnaAPIHandlerExceptions(TestCase):
-    def test_invalid_credentials_path(self):
-        with pytest.raises(FileNotFoundError, message='Expecting FileNotFoundError'):
-            ena_api_handler.EnaApiHandler('invalid/path')
+def test_invalid_credentials_path():
+    with pytest.raises(FileNotFoundError, message='Expecting FileNotFoundError'):
+        ena_api_handler.EnaApiHandler('invalid/path')
 
-    def test_invalid_credentials(self):
+
+def test_invalid_credentials_empty_file():
+    tmp_file = os.path.join('tests', 'tmp.yml')
+    with open(tmp_file, 'w') as f:
+        f.write('invalid_yaml')
+    with pytest.raises(TypeError, message='Expect yaml error'):
+        ena_api_handler.EnaApiHandler(tmp_file)
+    if os.path.exists(tmp_file):
+        os.remove(tmp_file)
+
+
+def test_invalid_credentials_empty_field():
+    with pytest.raises(AssertionError, message='Expecting AssertionError'):
         tmp_file = os.path.join('tests', 'tmp.yml')
         with open(tmp_file, 'w') as f:
-            f.write('invalid_yaml')
+            yaml.dump({"USERNAME": '', "PASSWORD": 'secret'}, f, allow_unicode=True)
         with pytest.raises(TypeError, message='Expect yaml error'):
             ena_api_handler.EnaApiHandler(tmp_file)
-        if os.path.exists(tmp_file):
-            os.remove(tmp_file)
+    if os.path.exists(tmp_file):
+        os.remove(tmp_file)
 
 
 class TestEnaAPIHandlerResponses(TestCase):

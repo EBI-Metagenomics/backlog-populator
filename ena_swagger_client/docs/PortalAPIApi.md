@@ -610,7 +610,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **search_using_get**
-> str search_using_get(result, saved_search=saved_search, query=query, fields=fields, sort_fields=sort_fields, offset=offset, limit=limit, data_portal=data_portal, dcc_data_only=dcc_data_only, include_metagenomes=include_metagenomes, format=format, download=download, email=email)
+> object search_using_get(result, saved_search=saved_search, query=query, fields=fields, sort_fields=sort_fields, offset=offset, limit=limit, data_portal=data_portal, dcc_data_only=dcc_data_only, include_metagenomes=include_metagenomes, format=format, download=download, email=email)
 
 Perform a warehouse search
 
@@ -671,7 +671,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**str**
+**object**
 
 ### Authorization
 
@@ -680,7 +680,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: text/plain, application/json
- - **Accept**: */*
+ - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

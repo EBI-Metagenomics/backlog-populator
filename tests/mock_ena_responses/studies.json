@@ -1,0 +1,56 @@
+[
+  {
+    "study_accession": "PRJNA431952",
+    "secondary_study_accession": "SRP131706",
+    "study_description": "Our current knowledge regarding microbial response to metail(loid)s contamination in extremely contaminated sites is relatively limited. However, understanding the microbial community response in such situations will reveal ecological strategies in extreme habitats, and expand our understanding of life on Earth. In this study, we investigated how the microbial communities in tailing ponds are shaped by heavy metal(loid)s such as Cd, Cu, Pb, As, and Sb.",
+    "study_name": "tailing ponds sediment",
+    "study_title": "tailing ponds sediment Raw sequence reads",
+    "center_name": "BioProject",
+    "broker_name": null,
+    "last_updated": "2018-01-31",
+    "first_public": "2018-01-31"
+  },
+  {
+    "study_accession": "PRJNA445564",
+    "secondary_study_accession": "SRP141386",
+    "study_description": "Isolated Synechococcus cultures frequently contain associated heterotrophic bacteria, and present a good and relevant research system to investigate the interactions of photoautotrophs-heterotrophs. Metagenomic sequences from microbial community co-cultured with a Synechococcus XM-24.",
+    "study_name": "marine metagenome",
+    "study_title": "Synechococcus and Synechococcus-associated heterotrophic bacteria genome sequencing",
+    "center_name": "BioProject",
+    "broker_name": null,
+    "last_updated": "2018-04-21",
+    "first_public": "2018-04-21"
+  },
+  {
+    "study_accession": "PRJEB6559",
+    "secondary_study_accession": "ERP006107",
+    "study_description": "Sunlight can be directly harvested by photoheterotrophic bacteria to create a pH gradient across the membrane, which can then be utilized to produce ATP. Despite the potential importance of this trophic strategy, when and where such organisms are found in the seas and oceans is poorly described. Here, we describe the abundance and taxonomy of bacteria with different trophic strategies (heterotrophs, phototrophs and photoheterotrophs) in contrasting water masses of the ultra-oligotrophic eastern Mediterranean Sea. These water bodies, an anticyclonic eddy and a high-chlorophyll patch resulting from transport of nutrient-rich coastal waters into offshore oligotrophic waters, each supported different microbial populations in surface waters. Based on infrared microscopy and metagenomics, aerobic anoxygenic photoheterotrophic (AAP) bacteria represented up to 10.4% of the microbial community. In contrast, the proteorhodopsin (PR) gene was found in 78.6%–118.8% of the bacterial genome equivalents, the highest abundance reported to date. These results suggest that PR-mediated photoheterotrophy may be especially important in oligotrophic, potentially phosphate-limited conditions.DOI 10.1111/1462-2920.13624",
+    "study_name": "Highly abundant proteorhodopsin genes in the Eastern Mediterranean Sea",
+    "study_title": "Metagenomic analysis reveals unusually high incidence of proteorhodopsin genes in the ultraoligotrophic Eastern Mediterranean Sea",
+    "center_name": "Haifa University, Leon H. Charney School of Marine Sciences - Israel",
+    "broker_name": null,
+    "last_updated": "2018-03-05",
+    "first_public": "2016-12-16"
+  },
+  {
+    "study_accession": "PRJNA330363",
+    "secondary_study_accession": "SRP080394",
+    "study_description": "Marine microbial communities from expanding oxygen minimum zones in Line P, North Pacific Ocean - fosmids plate 1 metagenome",
+    "study_name": "marine metagenome",
+    "study_title": "Marine microbial communities from expanding oxygen minimum zones in Line P, North Pacific Ocean - fosmids plate 1 metagenome",
+    "center_name": "BioProject",
+    "broker_name": null,
+    "last_updated": "2017-04-21",
+    "first_public": "2016-07-31"
+  },
+  {
+    "study_accession": "PRJEB26820",
+    "secondary_study_accession": "ERP108843",
+    "study_description": "The marine metagenome Third Party Annotation (TPA) assembly was derived from the primary whole genome shotgun (WGS) data set: PRJNA330363.  This project includes samples from the following biomes: Environmental, Aquatic, Marine.",
+    "study_name": null,
+    "study_title": "EMG produced TPA metagenomics assembly of the Marine microbial communities from expanding oxygen minimum zones in Line P, North Pacific Ocean - fosmids plate 1 metagenome (marine metagenome) data set.",
+    "center_name": "EMG",
+    "broker_name": "EBI-EMG",
+    "last_updated": "2018-05-18"
+  }
+]

@@ -46,8 +46,8 @@ def parse_args(raw_args):
 
 
 def main(raw_args):
-    if sys.version_info[0] < 3:
-        raise Exception("Must be using Python 3")
+    if sys.version_info.major < 3:
+        raise SyntaxError("Must be using Python 3")
     args = parse_args(raw_args)
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(filename=os.path.join('~', 'backlog-populator', 'backlog.log'), level=log_level)
