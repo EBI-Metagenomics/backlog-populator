@@ -40,12 +40,12 @@ def sync_studies(ena_api, database, cutoff_date):
 
 
 def save_or_update_runs(runs, database):
-    for run in runs:
+    for i, run in enumerate(runs):
         d = model_to_dict(run)
         # Remove un-necessary information, fix issue where study is replaced with row id
         del d['id']
         d['study'] = run.study
-        run, _ = Run.objects.using(database).update_or_create(primary_accession=d['primary_accession'],
+        runs[i], _ = Run.objects.using(database).update_or_create(primary_accession=d['primary_accession'],
                                                               defaults=d)
     return runs
 
@@ -90,7 +90,7 @@ def link_assemblies_to_runs(ena_api, database, studies, runs, ena_assemblies, as
     for assembly_accession, assembly in assemblies.items():
         assembly_accession = assembly.primary_accession
         run_accession = ena_assemblies[assembly_accession]['analysis_alias']
-        if run_accession[0:3] not in ('SRR', 'DRR', 'ERR'):
+        if run_accession[0:3] in ('SRR', 'DRR', 'ERR'):
             if run_accession not in runs:
                 try:
                     runs[run_accession] = emg_handler.fetch_run(ena_api, database, studies, run_accession)
@@ -104,6 +104,6 @@ def link_assemblies_to_runs(ena_api, database, studies, runs, ena_assemblies, as
     try:
         RunAssembly.objects.using(database).bulk_create(run_assemblies)
     except django.db.utils.IntegrityError:
-        for run_assembly in run_assemblies.values():
+        for run_assembly in run_assemblies:
             run_assembly.save()
     logging.info('Finished linking assemblies to runs in EMG.')

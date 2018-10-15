@@ -89,6 +89,14 @@ def mocked_requests_get(*args, **kwargs):
     return response
 
 
+def mock_invalid_study_get_request(*args, **kwargs):
+    api_call_result = kwargs['query_params'][0][1]
+    response = MockResponse(None, 404)
+    if api_call_result == 'study':
+        response = MockResponse(fetch_mock_response(os.path.join('invalid_responses', 'invalid_study.json')), 200)
+    return response
+
+
 # Run includes 1 lacking read / base count
 def mock_invalid_run_get_request(*args, **kwargs):
     api_call_result = kwargs['query_params'][0][1]

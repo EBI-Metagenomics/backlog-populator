@@ -51,7 +51,6 @@ def load_cutoff_date():
     if os.path.exists(cutoff_file):
         with open(cutoff_file, 'r') as f:
             return json.load(f)['cutoff-date']
-    return None
 
 
 def save_cutoff_date(date):
