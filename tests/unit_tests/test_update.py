@@ -26,7 +26,7 @@ class TestSync(TestCase):
         dbs = ['default', 'dev', 'prod']
         for db in dbs:
             args = update.parse_args(['-d', db, '-c', '2018-01-01'])
-            self.assertEquals(db, args.database)
+            self.assertEqual(db, args.database)
 
     def test_argparse_should_raise_error_if_invalid_date(self):
         invalid_date = 'invalid_date'
@@ -40,7 +40,7 @@ class TestSync(TestCase):
     def test_argparse_should_accept_valid_date(self):
         str_date = '2018-01-01'
         args = update.parse_args(['-c', str_date])
-        self.assertEquals(str_date, args.cutoffdate)
+        self.assertEqual(str_date, args.cutoffdate)
 
     def tearDown(self):
         clear_database()

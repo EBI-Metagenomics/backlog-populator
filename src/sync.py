@@ -1,6 +1,8 @@
 import logging
 import os
 import django.db
+from django.forms.models import model_to_dict
+import django.core.exceptions
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'db.settings'
 
@@ -10,6 +12,16 @@ from backlog.models import Study, Run, RunAssembly
 from src import mgnify_handler as emg_handler
 
 logging.basicConfig(level=logging.DEBUG)
+
+
+def save_or_update_studies(studies, database):
+    for i, study in enumerate(studies):
+        d = model_to_dict(study)
+        del d['id']
+        studies[i], _ = Study.objects.using(database).update_or_create(primary_accession=d['primary_accession'],
+                                                                       secondary_accession=d['secondary_accession'],
+                                                                       defaults=d)
+    return studies
 
 
 def sync_studies(ena_api, database, cutoff_date):
@@ -22,9 +34,20 @@ def sync_studies(ena_api, database, cutoff_date):
             studies[study] = emg_handler.create_study_obj(data)
         except Exception as e:
             logging.error(e)
+            logging.error('Could not insert {}'.format(study))
             continue
-    Study.objects.using(database).bulk_create(studies.values())
-    return studies
+    return {study.secondary_accession: study for study in save_or_update_studies(list(studies.values()), database)}
+
+
+def save_or_update_runs(runs, database):
+    for run in runs:
+        d = model_to_dict(run)
+        # Remove un-necessary information, fix issue where study is replaced with row id
+        del d['id']
+        d['study'] = run.study
+        run, _ = Run.objects.using(database).update_or_create(primary_accession=d['primary_accession'],
+                                                              defaults=d)
+    return runs
 
 
 def sync_runs(ena_api, database, cutoff_date, studies):
@@ -35,11 +58,12 @@ def sync_runs(ena_api, database, cutoff_date, studies):
     for run, data in ena_runs.items():
         try:
             runs[run] = emg_handler.create_run_obj(ena_api, database, studies, data)
-        except Exception as e:
+        except (django.core.exceptions.ValidationError, ValueError, KeyError) as e:
             logging.error(e)
+            logging.error('Could not insert {}'.format(run))
             continue
-    Run.objects.using(database).bulk_create(runs.values())
-    return runs
+
+    return {run.primary_accession: run for run in save_or_update_runs(list(runs.values()), database)}
 
 
 def sync_assemblies(ena_api, database, cutoff_date, studies, runs):
@@ -66,14 +90,20 @@ def link_assemblies_to_runs(ena_api, database, studies, runs, ena_assemblies, as
     for assembly_accession, assembly in assemblies.items():
         assembly_accession = assembly.primary_accession
         run_accession = ena_assemblies[assembly_accession]['analysis_alias']
-        if run_accession not in runs:
-            try:
-                runs[run_accession] = emg_handler.fetch_run(ena_api, database, studies, run_accession)
-                run_assemblies.append(RunAssembly(assembly=assembly, run=runs[run_accession]))
-            except ValueError as e:
-                logging.error(e)
-                logging.warning(
-                    'Could not find a run for assembly {} with alias {}'.format(assembly_accession,
-                                                                                run_accession))
-    RunAssembly.objects.using(database).bulk_create(run_assemblies)
+        if run_accession[0:3] not in ('SRR', 'DRR', 'ERR'):
+            if run_accession not in runs:
+                try:
+                    runs[run_accession] = emg_handler.fetch_run(ena_api, database, studies, run_accession)
+                except ValueError as e:
+                    logging.error(e)
+                    logging.warning(
+                        'Could not find a run for assembly {} with alias {}'.format(assembly_accession,
+                                                                                    run_accession))
+            run_assemblies.append(RunAssembly(assembly=assembly, run=runs[run_accession]))
+
+    try:
+        RunAssembly.objects.using(database).bulk_create(run_assemblies)
+    except django.db.utils.IntegrityError:
+        for run_assembly in run_assemblies.values():
+            run_assembly.save()
     logging.info('Finished linking assemblies to runs in EMG.')

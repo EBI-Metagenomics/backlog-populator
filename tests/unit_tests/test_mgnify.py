@@ -84,36 +84,36 @@ class TestBacklogHandler(TestCase):
         study_data['primary_accession'] = study_data['study_accession']
         study_data['secondary_accession'] = study_data['secondary_study_accession']
         study = Study.objects.using(db_name).get(primary_accession=study_data['study_accession'])
-        self.assertEquals(study.primary_accession, study_data['study_accession'])
-        self.assertEquals(study.secondary_accession, study_data['secondary_study_accession'])
-        self.assertEquals(study.title, study_data['study_title'])
+        self.assertEqual(study.primary_accession, study_data['study_accession'])
+        self.assertEqual(study.secondary_accession, study_data['secondary_study_accession'])
+        self.assertEqual(study.title, study_data['study_title'])
         self.assertTrue(study.public)
-        self.assertEquals(study.last_updated.date(), datetime.now().date())
+        self.assertEqual(study.last_updated.date(), datetime.now().date())
 
     def assert_run_in_db(self, run_data):
         run = Run.objects.using(db_name).get(primary_accession=run_data['run_accession'])
-        self.assertEquals(run.study.secondary_accession, run_data['secondary_study_accession'])
-        self.assertEquals(run.primary_accession, run_data['run_accession'])
-        self.assertEquals(run.instrument_platform, run_data['instrument_platform'])
-        self.assertEquals(run.instrument_model, run_data['instrument_model'])
-        self.assertEquals(run.read_count, run_data['read_count'])
-        self.assertEquals(run.base_count, run_data['base_count'])
-        self.assertEquals(run.library_layout, run_data['library_layout'])
-        self.assertEquals(run.library_strategy, run_data['library_strategy'])
-        self.assertEquals(run.ena_last_update, str_to_date(run_data['last_updated']))
-        self.assertEquals(run.last_updated.date(), datetime.now().date())
+        self.assertEqual(run.study.secondary_accession, run_data['secondary_study_accession'])
+        self.assertEqual(run.primary_accession, run_data['run_accession'])
+        self.assertEqual(run.instrument_platform, run_data['instrument_platform'])
+        self.assertEqual(run.instrument_model, run_data['instrument_model'])
+        self.assertEqual(run.read_count, run_data['read_count'])
+        self.assertEqual(run.base_count, run_data['base_count'])
+        self.assertEqual(run.library_layout, run_data['library_layout'])
+        self.assertEqual(run.library_strategy, run_data['library_strategy'])
+        self.assertEqual(run.ena_last_update, str_to_date(run_data['last_updated']))
+        self.assertEqual(run.last_updated.date(), datetime.now().date())
 
     def assert_assembly_in_db(self, assembly_data, is_associated_to_run=True):
         assembly = Assembly.objects.using(db_name).get(primary_accession=assembly_data['analysis_accession'])
-        self.assertEquals(assembly.primary_accession, assembly_data['analysis_accession'])
-        self.assertEquals(assembly.study.secondary_accession, assembly_data['secondary_study_accession'])
+        self.assertEqual(assembly.primary_accession, assembly_data['analysis_accession'])
+        self.assertEqual(assembly.study.secondary_accession, assembly_data['secondary_study_accession'])
 
         if is_associated_to_run:
             related_runs = assembly.runassembly_set.select_related()
-            self.assertEquals(related_runs[0].run.primary_accession, assembly_data['analysis_alias'])
-            self.assertEquals(assembly.ena_last_update, str_to_date(assembly_data['last_updated']))
+            self.assertEqual(related_runs[0].run.primary_accession, assembly_data['analysis_alias'])
+            self.assertEqual(assembly.ena_last_update, str_to_date(assembly_data['last_updated']))
         else:
-            self.assertEquals(0, len(RunAssembly.objects.using(db_name).all()))
+            self.assertEqual(0, len(RunAssembly.objects.using(db_name).all()))
 
     def test_insert_study(self):
         mgnify_handler.create_study_obj(self.study_data).save()
@@ -143,7 +143,7 @@ class TestBacklogHandler(TestCase):
     def test_insert_assembly_without_cached_run(self):
         mgnify_handler.create_assembly(self.ena_handler, db_name, {}, self.assembly_data).save()
         self.assert_assembly_in_db(self.assembly_data, False)
-        self.assertEquals(1, len(Study.objects.using(db_name).all()))
+        self.assertEqual(1, len(Study.objects.using(db_name).all()))
 
     def test_insert_assembly_with_cached_run(self):
         mgnify_handler.create_assembly(self.ena_handler, db_name, {}, self.assembly_data).save()
@@ -151,28 +151,28 @@ class TestBacklogHandler(TestCase):
         self.assert_study_in_db(self.study_data)
         self.assert_assembly_in_db(self.assembly_data, False)
         self.assert_assembly_in_db(self.assembly2_data, False)
-        self.assertEquals(1, len(Study.objects.using(db_name).all()))
+        self.assertEqual(1, len(Study.objects.using(db_name).all()))
 
     def test_insert_assembly_without_run(self):
         mgnify_handler.create_assembly(self.ena_handler, db_name, {}, self.assembly_data_no_run).save()
         self.assert_assembly_in_db(self.assembly_data_no_run, False)
-        self.assertEquals(1, len(Study.objects.using(db_name).all()))
+        self.assertEqual(1, len(Study.objects.using(db_name).all()))
 
     @mock.patch('swagger_client.ApiClient.request', side_effect=mocked_requests_get)
     def test_fetch_existing_run_from_mgnify(self, mock_name):
         run_accession = 'SRR6670121'
         sync.sync_runs(self.ena_handler, db_name, '2018-01-01', {})
-        self.assertEquals(num_fixture_runs, len(Run.objects.using(db_name).all()))
+        self.assertEqual(num_fixture_runs, len(Run.objects.using(db_name).all()))
         run = mgnify_handler.fetch_run(self.ena_handler, db_name, {}, run_accession)
-        self.assertEquals(run.primary_accession, run_accession)
+        self.assertEqual(run.primary_accession, run_accession)
 
     @mock.patch('swagger_client.ApiClient.request', side_effect=mocked_requests_get)
     def test_fetch_new_run_from_mgnify(self, mock_name):
-        self.assertEquals(0, len(Run.objects.using(db_name).all()))
+        self.assertEqual(0, len(Run.objects.using(db_name).all()))
         run_accession = 'SRR6670121'
         run = mgnify_handler.fetch_run(self.ena_handler, db_name, {}, run_accession)
-        self.assertEquals(1, len(Run.objects.using(db_name).all()))
-        self.assertEquals(run.primary_accession, run_accession)
+        self.assertEqual(1, len(Run.objects.using(db_name).all()))
+        self.assertEqual(run.primary_accession, run_accession)
 
     def tearDown(self):
         clear_database()

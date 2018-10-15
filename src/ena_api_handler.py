@@ -61,7 +61,6 @@ class EnaApiHandler:
                                             **self.default_options)
         if len(results) == 0:
             raise ValueError('Study {} does not exist in ENA'.format(secondary_study_accession))
-        print(results)
         return results[0]
 
     def get_updated_runs(self, cutoff_date):

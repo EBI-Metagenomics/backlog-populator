@@ -55,7 +55,7 @@ class TestEnaAPIHandlerResponses(TestCase):
 
     def test_fetch_single_study_has_correct_fields(self):
         study = self.ena_handler.get_study('ERP001736')
-        self.assertEquals(study.keys(), self.expected_study_fields)
+        self.assertEqual(study.keys(), self.expected_study_fields)
 
     def test_fetch_single_study_with_invalid_accession(self):
         with pytest.raises(ValueError, message='Expect ValueError'):
@@ -65,7 +65,7 @@ class TestEnaAPIHandlerResponses(TestCase):
         date = datetime.now() - sync_time
         studies = self.ena_handler.get_updated_studies(date.strftime("%Y-%m-%d"))
         for study in studies.values():
-            self.assertEquals(study.keys(), self.expected_study_fields)
+            self.assertEqual(study.keys(), self.expected_study_fields)
 
     def test_fetches_studies_from_date(self):
         date = datetime.now() - sync_time
@@ -77,11 +77,11 @@ class TestEnaAPIHandlerResponses(TestCase):
         date = datetime.now() - sync_time
         runs = self.ena_handler.get_updated_runs(date.strftime("%Y-%m-%d"))
         for run in runs.values():
-            self.assertEquals(run.keys(), self.expected_run_fields)
+            self.assertEqual(run.keys(), self.expected_run_fields)
 
     def test_fetch_single_run_has_correct_fields(self):
         study = self.ena_handler.get_run('SRR7186375')
-        self.assertEquals(study.keys(), self.expected_run_fields)
+        self.assertEqual(study.keys(), self.expected_run_fields)
 
     def test_fetch_single_run_with_invalid_accession(self):
         with pytest.raises(ValueError, message='Expect ValueError'):
@@ -93,22 +93,22 @@ class TestEnaAPIHandlerResponses(TestCase):
                                     'secondary_study_accession'}
         analyses = self.ena_handler.get_updated_assemblies(date.strftime("%Y-%m-%d"))
         for analysis in analyses.values():
-            self.assertEquals(analysis.keys(), expected_analysis_fields)
+            self.assertEqual(analysis.keys(), expected_analysis_fields)
 
     def test_fetch_study_no_update(self):
         date = datetime.now() + sync_time
         studies = self.ena_handler.get_updated_studies(date.strftime("%Y-%m-%d"))
-        self.assertEquals(studies, {})
+        self.assertEqual(studies, {})
 
     def test_fetch_runs_no_update(self):
         date = datetime.now() + sync_time
         runs = self.ena_handler.get_updated_runs(date.strftime("%Y-%m-%d"))
-        self.assertEquals(runs, {})
+        self.assertEqual(runs, {})
 
     def test_fetch_analyses_no_update(self):
         date = datetime.now() + sync_time
         analyses = self.ena_handler.get_updated_assemblies(date.strftime("%Y-%m-%d"))
-        self.assertEquals(analyses, {})
+        self.assertEqual(analyses, {})
 
     @classmethod
     def tearDownClass(cls):
