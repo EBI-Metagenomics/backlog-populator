@@ -1,5 +1,5 @@
-django
-PyYAML
+Django==1.11.13
+PyYAML==3.12
 mysql-connector-python-rf==2.2.2
 python-dateutil==2.7.2
-git+git://github.com/EBI-Metagenomics/emg-backlog-schema.git#egg=emg-backlog-schema
+emg-backlog-schema
