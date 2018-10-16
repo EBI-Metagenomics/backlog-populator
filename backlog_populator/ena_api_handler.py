@@ -1,7 +1,7 @@
 import yaml
 import logging
 
-from ena_swagger_client import swagger_client
+from backlog_populator.ena_swagger_client import swagger_client
 
 study_fetch_fields = 'study_accession,secondary_study_accession,study_description,study_name,study_title,center_name,' \
                      'broker_name,last_updated,first_public'

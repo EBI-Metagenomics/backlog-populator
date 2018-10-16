@@ -1,0 +1,2 @@
+include backlog_populator/*
+recursive-include backlog_populator/ena_swagger_client/swagger_client/*
