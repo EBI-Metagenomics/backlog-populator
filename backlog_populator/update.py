@@ -35,6 +35,7 @@ def parse_args(raw_args):
     parser.add_argument('-d', '--database', type=Database, choices=list(Database), default=Database.dev,
                         help='Target database to update')
     parser.add_argument('-r', '--refresh', action="store_true", help='If set update all data')
+    parser.add_argument('-e', '--ena-credentials', help='Path to ena credentials yml file')
     parser.add_argument("-c",
                         "--cutoffdate",
                         help="The Start Date - format YYYY-MM-DD",
@@ -71,7 +72,7 @@ def main(raw_args=sys.argv[1:]):
     else:
         cutoff = args.cutoffdate
     # Setup ENA API module
-    ena_handler = ena_api_handler.EnaApiHandler(ena_creds)
+    ena_handler = ena_api_handler.EnaApiHandler(args.ena_credentials or ena_creds)
     studies = sync.sync_studies(ena_handler, args.database, cutoff)
     runs = sync.sync_runs(ena_handler, args.database, cutoff, studies)
     assemblies = sync.sync_assemblies(ena_handler, args.database, cutoff, studies, runs)
