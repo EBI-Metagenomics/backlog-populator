@@ -5,6 +5,7 @@ from copy import deepcopy
 from unittest import TestCase, mock
 
 from src import mgnify_handler, sync
+
 from ..utils import ena_creds_path, write_creds_file, db_name, str_to_date, clear_database, ena_api_handler_options, \
     Study, Run, Assembly, RunAssembly, num_fixture_runs, mocked_requests_get
 

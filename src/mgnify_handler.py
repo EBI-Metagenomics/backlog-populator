@@ -9,7 +9,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'db.settings'
 django.setup()
 
 from backlog.models import Study, Run, Assembly
-from src import sync
+import src.sync
 
 
 def sanitise_string(text):
@@ -77,7 +77,7 @@ def fetch_study(ena_api, database, secondary_study_accession):
     backlog_study = Study.objects.using(database).filter(secondary_accession=secondary_study_accession)
     if len(backlog_study) == 0:
         study = create_study_obj(ena_api.get_study(secondary_study_accession))
-        db_study = sync.save_or_update_studies([study], database)[0]
+        db_study = src.sync.save_or_update_studies([study], database)[0]
     else:
         db_study = backlog_study[0]
     return db_study
@@ -88,7 +88,7 @@ def fetch_run(ena_api, database, studies, run_accession):
     if len(backlog_run) == 0:
         run_data = ena_api.get_run(run_accession)
         run = create_run_obj(ena_api, database, studies, run_data)
-        run = sync.save_or_update_runs([run], database)[0]
+        run = src.sync.save_or_update_runs([run], database)[0]
     else:
         run = backlog_run[0]
     return run

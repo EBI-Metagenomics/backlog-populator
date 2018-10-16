@@ -5,7 +5,8 @@ import os
 import logging
 import sys
 import json
-from src import ena_api_handler, sync
+from src import ena_api_handler
+import src.sync as sync
 
 
 class Database(Enum):
