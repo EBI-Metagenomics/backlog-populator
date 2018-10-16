@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='emg-backlog-populator',
-      version='1.0.1',
+      version='1.0.2',
       description='Utility to sync MGnify backlog schema from ENA ',
       author='Miguel Boland',
       author_email='mdb@ebi.ac.uk',

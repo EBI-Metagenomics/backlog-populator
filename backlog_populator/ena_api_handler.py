@@ -38,7 +38,6 @@ class EnaApiHandler:
         self.configuration.password = ena_creds['PASSWORD']
         self.api = swagger_client.PortalAPIApi(swagger_client.ApiClient(self.configuration))
         self.default_options = {
-            'data_portal': 'metagenome',
             'format': 'json'
         }
         if extra_options:
@@ -98,3 +97,14 @@ class EnaApiHandler:
         # logging.info('Found {} assemblies to update'.format(len(rows)))
         results = {entry['analysis_accession']: entry for entry in raw_results}
         return results
+
+    def get_assembly(self, assembly_accession):
+        results = self.api.search_using_get('analysis',
+                                            query='analysis_type=SEQUENCE_ASSEMBLY'
+                                                  ' AND analysis_accession=' + assembly_accession,
+                                            fields='analysis_accession,analysis_alias,'
+                                                   'first_public,last_updated,secondary_study_accession',
+                                            **self.default_options)
+        if len(results) == 0:
+            raise ValueError('Assembly {} does not exist in ENA'.format(assembly_accession))
+        return results[0]
