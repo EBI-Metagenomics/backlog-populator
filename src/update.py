@@ -79,7 +79,7 @@ def main(raw_args):
     assemblies = sync.sync_assemblies(ena_handler, args.database, cutoff, studies, runs)
     logging.info('Updated {} assemblies'.format(len(assemblies)))
 
-    save_cutoff_date(cutoff)
+    save_cutoff_date(datetime.today().strftime('%Y-%m-%d'))
 
 
 if __name__ == '__main__':

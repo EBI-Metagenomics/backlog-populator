@@ -47,7 +47,7 @@ class TestSync(TestCase):
         update.main(['-c', cutoff, '--database', 'default'])
         self.assertTrue(os.path.exists(update.cutoff_file))
         with open(update.cutoff_file, 'r') as f:
-            self.assertEqual(json.load(f)['cutoff-date'], cutoff)
+            self.assertEqual(json.load(f)['cutoff-date'], datetime.today().strftime('%Y-%m-%d'))
 
     @mock.patch('swagger_client.ApiClient.request', new=mocked_requests_get)
     def test_main_should_read_cutoff_json(self):
@@ -57,7 +57,7 @@ class TestSync(TestCase):
         self.assertTrue(os.path.exists(update.cutoff_file))
         update.main(['--database', 'default'])
         with open(update.cutoff_file, 'r') as f:
-            self.assertEqual(json.load(f)['cutoff-date'], cutoff)
+            self.assertEqual(json.load(f)['cutoff-date'], datetime.today().strftime('%Y-%m-%d'))
 
         ena_handler = ena_api_handler.EnaApiHandler(ena_creds_path, ena_api_handler_options)
         studies = ena_handler.get_updated_studies(cutoff)
