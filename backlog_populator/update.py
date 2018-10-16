@@ -4,8 +4,9 @@ from datetime import datetime
 import os
 import logging
 import sys
-
-from src import ena_api_handler, sync
+import json
+from backlog_populator import ena_api_handler
+import backlog_populator.sync as sync
 
 
 class Database(Enum):
@@ -37,7 +38,6 @@ def parse_args(raw_args):
     parser.add_argument("-c",
                         "--cutoffdate",
                         help="The Start Date - format YYYY-MM-DD",
-                        required=True,
                         type=valid_date)
     parser.add_argument('-v', '--verbose', action='store_true', help='Set logging level to DEBUG')
     args = parser.parse_args(raw_args)
@@ -45,22 +45,42 @@ def parse_args(raw_args):
     return args
 
 
-def main(raw_args):
-    if sys.version_info[0] < 3:
-        raise Exception("Must be using Python 3")
+cutoff_file = os.path.join(os.path.dirname(__file__), 'cutoff.json')
+
+
+def load_cutoff_date():
+    if os.path.exists(cutoff_file):
+        with open(cutoff_file, 'r') as f:
+            return json.load(f)['cutoff-date']
+
+
+def save_cutoff_date(date):
+    with open(cutoff_file, 'w+') as f:
+        json.dump({'cutoff-date': date}, f)
+
+
+def main(raw_args=sys.argv[1:]):
+    if sys.version_info.major < 3:
+        raise SyntaxError("Must be using Python 3")
     args = parse_args(raw_args)
-    log_level = logging.DEBUG if args.verbose else logging.INFO
+    log_level = logging.DEBUG if args.verbose else logging.info
     logging.basicConfig(filename=os.path.join('~', 'backlog-populator', 'backlog.log'), level=log_level)
 
+    if not args.cutoffdate:
+        cutoff = load_cutoff_date() or '1970-01-01'
+    else:
+        cutoff = args.cutoffdate
     # Setup ENA API module
     ena_handler = ena_api_handler.EnaApiHandler(ena_creds)
-
-    studies = sync.sync_studies(ena_handler, args.database, args.cutoffdate)
+    studies = sync.sync_studies(ena_handler, args.database, cutoff)
+    runs = sync.sync_runs(ena_handler, args.database, cutoff, studies)
+    assemblies = sync.sync_assemblies(ena_handler, args.database, cutoff, studies, runs)
     logging.info('Updated {} studies'.format(len(studies)))
-    runs = sync.sync_runs(ena_handler, args.database, args.cutoffdate, studies)
     logging.info('Updated {} runs'.format(len(runs)))
-    assemblies = sync.sync_assemblies(ena_handler, args.database, args.cutoffdate, studies, runs)
     logging.info('Updated {} assemblies'.format(len(assemblies)))
 
+    save_cutoff_date(datetime.today().strftime('%Y-%m-%d'))
+
+
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
