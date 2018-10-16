@@ -1,13 +1,16 @@
 from unittest import TestCase
 import argparse
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from src import update
+import os
 
-from ..utils import clear_database
+from backlog_populator import update
+from ..utils import ena_creds_path, write_creds_file, clear_database
 
 
 class TestSync(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        write_creds_file()
+
     def setUp(self):
         clear_database()
 
@@ -23,7 +26,7 @@ class TestSync(TestCase):
         dbs = ['default', 'dev', 'prod']
         for db in dbs:
             args = update.parse_args(['-d', db, '-c', '2018-01-01'])
-            self.assertEquals(db, args.database)
+            self.assertEqual(db, args.database)
 
     def test_argparse_should_raise_error_if_invalid_date(self):
         invalid_date = 'invalid_date'
@@ -37,11 +40,12 @@ class TestSync(TestCase):
     def test_argparse_should_accept_valid_date(self):
         str_date = '2018-01-01'
         args = update.parse_args(['-c', str_date])
-        self.assertEquals(str_date, args.cutoffdate)
-
-    def test_main(self):
-        cutoff = (datetime.now().date() - relativedelta(days=1)).strftime('%Y-%m-%d')
-        update.main(['-c', cutoff, '--database', 'default'])
+        self.assertEqual(str_date, args.cutoffdate)
 
     def tearDown(self):
         clear_database()
+
+    @classmethod
+    def tearDownClass(cls):
+        if os.path.exists(ena_creds_path):
+            os.remove(ena_creds_path)

@@ -1,24 +1,36 @@
 from unittest import TestCase
 import pytest
+import yaml
 from datetime import datetime
 import os
-from src import ena_api_handler
+from backlog_populator import ena_api_handler
 from ..utils import ena_creds_path, write_creds_file, sync_time, ena_api_handler_options
 
 
-class TestEnaAPIHandlerExceptions(object):
-    def test_invalid_credentials_path(self):
-        with pytest.raises(FileNotFoundError, message='Expecting FileNotFoundError'):
-            ena_api_handler.EnaApiHandler('invalid/path')
+def test_invalid_credentials_path():
+    with pytest.raises(FileNotFoundError, message='Expecting FileNotFoundError'):
+        ena_api_handler.EnaApiHandler('invalid/path')
 
-    def test_invalid_credentials(self):
+
+def test_invalid_credentials_empty_file():
+    tmp_file = os.path.join('tests', 'tmp.yml')
+    with open(tmp_file, 'w') as f:
+        f.write('invalid_yaml')
+    with pytest.raises(TypeError, message='Expect yaml error'):
+        ena_api_handler.EnaApiHandler(tmp_file)
+    if os.path.exists(tmp_file):
+        os.remove(tmp_file)
+
+
+def test_invalid_credentials_empty_field():
+    with pytest.raises(AssertionError, message='Expecting AssertionError'):
         tmp_file = os.path.join('tests', 'tmp.yml')
         with open(tmp_file, 'w') as f:
-            f.write('invalid_yaml')
+            yaml.dump({"USERNAME": '', "PASSWORD": 'secret'}, f, allow_unicode=True)
         with pytest.raises(TypeError, message='Expect yaml error'):
             ena_api_handler.EnaApiHandler(tmp_file)
-        if os.path.exists(tmp_file):
-            os.remove(tmp_file)
+    if os.path.exists(tmp_file):
+        os.remove(tmp_file)
 
 
 class TestEnaAPIHandlerResponses(TestCase):
@@ -43,7 +55,7 @@ class TestEnaAPIHandlerResponses(TestCase):
 
     def test_fetch_single_study_has_correct_fields(self):
         study = self.ena_handler.get_study('ERP001736')
-        assert study.keys() == self.expected_study_fields
+        self.assertEqual(study.keys(), self.expected_study_fields)
 
     def test_fetch_single_study_with_invalid_accession(self):
         with pytest.raises(ValueError, message='Expect ValueError'):
@@ -53,23 +65,23 @@ class TestEnaAPIHandlerResponses(TestCase):
         date = datetime.now() - sync_time
         studies = self.ena_handler.get_updated_studies(date.strftime("%Y-%m-%d"))
         for study in studies.values():
-            assert study.keys() == self.expected_study_fields
+            self.assertEqual(study.keys(), self.expected_study_fields)
 
     def test_fetches_studies_from_date(self):
         date = datetime.now() - sync_time
         studies = self.ena_handler.get_updated_studies(date.strftime("%Y-%m-%d"))
         for study in studies.values():
-            assert datetime.strptime(study['last_updated'], "%Y-%m-%d").date() >= date.date()
+            self.assertLessEqual(date.date(), datetime.strptime(study['last_updated'], "%Y-%m-%d").date())
 
     def test_fetch_multiple_runs_with_correct_fields(self):
         date = datetime.now() - sync_time
         runs = self.ena_handler.get_updated_runs(date.strftime("%Y-%m-%d"))
         for run in runs.values():
-            assert run.keys() == self.expected_run_fields
+            self.assertEqual(run.keys(), self.expected_run_fields)
 
     def test_fetch_single_run_has_correct_fields(self):
         study = self.ena_handler.get_run('SRR7186375')
-        assert study.keys() == self.expected_run_fields
+        self.assertEqual(study.keys(), self.expected_run_fields)
 
     def test_fetch_single_run_with_invalid_accession(self):
         with pytest.raises(ValueError, message='Expect ValueError'):
@@ -81,22 +93,22 @@ class TestEnaAPIHandlerResponses(TestCase):
                                     'secondary_study_accession'}
         analyses = self.ena_handler.get_updated_assemblies(date.strftime("%Y-%m-%d"))
         for analysis in analyses.values():
-            assert analysis.keys() == expected_analysis_fields
+            self.assertEqual(analysis.keys(), expected_analysis_fields)
 
     def test_fetch_study_no_update(self):
         date = datetime.now() + sync_time
         studies = self.ena_handler.get_updated_studies(date.strftime("%Y-%m-%d"))
-        assert studies == {}
+        self.assertEqual(studies, {})
 
     def test_fetch_runs_no_update(self):
         date = datetime.now() + sync_time
         runs = self.ena_handler.get_updated_runs(date.strftime("%Y-%m-%d"))
-        assert runs == {}
+        self.assertEqual(runs, {})
 
     def test_fetch_analyses_no_update(self):
         date = datetime.now() + sync_time
         analyses = self.ena_handler.get_updated_assemblies(date.strftime("%Y-%m-%d"))
-        assert analyses == {}
+        self.assertEqual(analyses, {})
 
     @classmethod
     def tearDownClass(cls):
