@@ -6,7 +6,7 @@ from ..utils import ena_creds_path, write_creds_file, db_name, date_to_str, clea
     sync_time, ena_api_handler_options, mocked_requests_get, mock_invalid_run_get_request, num_fixture_studies, \
     num_fixture_runs, num_fixture_assemblies, mock_invalid_study_get_request
 
-from src import sync, ena_api_handler
+from backlog_populator import sync, ena_api_handler
 
 
 class TestSync(TestCase):

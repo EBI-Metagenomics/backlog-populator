@@ -2,7 +2,7 @@ from unittest import TestCase
 import argparse
 import os
 
-from src import update
+from backlog_populator import update
 from ..utils import ena_creds_path, write_creds_file, clear_database
 
 

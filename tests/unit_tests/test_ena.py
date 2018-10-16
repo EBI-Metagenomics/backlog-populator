@@ -3,7 +3,7 @@ import pytest
 import yaml
 from datetime import datetime
 import os
-from src import ena_api_handler
+from backlog_populator import ena_api_handler
 from ..utils import ena_creds_path, write_creds_file, sync_time, ena_api_handler_options
 
 

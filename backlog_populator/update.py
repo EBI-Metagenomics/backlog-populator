@@ -5,8 +5,8 @@ import os
 import logging
 import sys
 import json
-from src import ena_api_handler
-import src.sync as sync
+from backlog_populator import ena_api_handler
+import backlog_populator.sync as sync
 
 
 class Database(Enum):
@@ -59,7 +59,7 @@ def save_cutoff_date(date):
         json.dump({'cutoff-date': date}, f)
 
 
-def main(raw_args):
+def main(raw_args=sys.argv[1:]):
     if sys.version_info.major < 3:
         raise SyntaxError("Must be using Python 3")
     args = parse_args(raw_args)
@@ -72,16 +72,15 @@ def main(raw_args):
         cutoff = args.cutoffdate
     # Setup ENA API module
     ena_handler = ena_api_handler.EnaApiHandler(ena_creds)
-
     studies = sync.sync_studies(ena_handler, args.database, cutoff)
-    logging.info('Updated {} studies'.format(len(studies)))
     runs = sync.sync_runs(ena_handler, args.database, cutoff, studies)
-    logging.info('Updated {} runs'.format(len(runs)))
     assemblies = sync.sync_assemblies(ena_handler, args.database, cutoff, studies, runs)
+    logging.info('Updated {} studies'.format(len(studies)))
+    logging.info('Updated {} runs'.format(len(runs)))
     logging.info('Updated {} assemblies'.format(len(assemblies)))
 
     save_cutoff_date(datetime.today().strftime('%Y-%m-%d'))
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

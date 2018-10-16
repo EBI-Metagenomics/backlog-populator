@@ -4,6 +4,7 @@ python:
   - '3.4'
   - '3.5'
   - '3.6'
+  - '3.7'
 env:
   - DJANGO_BACKLOG_DEFAULT_CONFIG=$TRAVIS_BUILD_DIR/travis/config.yaml
 
@@ -24,6 +25,6 @@ install:
   # - flake8 -v .
 
 script:
-  - pytest --cov=src tests/
+  - pytest --cov=backlog_populator tests/
   - coverage xml -o $TRAVIS_BUILD_DIR/coverage.xml
   - python-codacy-coverage -r $TRAVIS_BUILD_DIR/coverage.xml

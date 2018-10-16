@@ -9,7 +9,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'db.settings'
 django.setup()
 
 from backlog.models import Study, Run, Assembly
-import src.sync
+import backlog_populator.sync
 
 
 def sanitise_string(text):
@@ -25,7 +25,6 @@ def get_date(data, field):
 
 
 def create_study_obj(data):
-    logging.info('Saving study {}'.format(data['secondary_study_accession']))
     s = Study(primary_accession=data['study_accession'],
               secondary_accession=data['secondary_study_accession'],
               title=sanitise_string(data['study_title']),
@@ -36,8 +35,6 @@ def create_study_obj(data):
 
 
 def create_run_obj(ena_api, database, studies, data):
-    logging.info('Saving run {} to study {}'.format(data['run_accession'], data['secondary_study_accession']))
-
     study_acc = data['secondary_study_accession']
     if study_acc not in studies or studies[study_acc].id is None:
         logging.info('Study {} not found in cache, fetching...'.format(study_acc))
@@ -60,8 +57,6 @@ def create_run_obj(ena_api, database, studies, data):
 
 
 def create_assembly(ena_api, database, studies, data):
-    logging.info('Saving analysis {}'.format(data['analysis_accession']))
-
     study_acc = data['secondary_study_accession']
     if study_acc not in studies or studies[study_acc].id is None:
         logging.info('Study {} not found in cache, fetching...'.format(study_acc))
@@ -77,7 +72,7 @@ def fetch_study(ena_api, database, secondary_study_accession):
     backlog_study = Study.objects.using(database).filter(secondary_accession=secondary_study_accession)
     if len(backlog_study) == 0:
         study = create_study_obj(ena_api.get_study(secondary_study_accession))
-        db_study = src.sync.save_or_update_studies([study], database)[0]
+        db_study = backlog_populator.sync.save_or_update_studies([study], database)[0]
     else:
         db_study = backlog_study[0]
     return db_study
@@ -88,7 +83,7 @@ def fetch_run(ena_api, database, studies, run_accession):
     if len(backlog_run) == 0:
         run_data = ena_api.get_run(run_accession)
         run = create_run_obj(ena_api, database, studies, run_data)
-        run = src.sync.save_or_update_runs([run], database)[0]
+        run = backlog_populator.sync.save_or_update_runs([run], database)[0]
     else:
         run = backlog_run[0]
     return run

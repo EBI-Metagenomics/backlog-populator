@@ -9,7 +9,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'db.settings'
 django.setup()
 
 from backlog.models import Study, Run, RunAssembly
-from src import mgnify_handler as emg_handler
+from backlog_populator import mgnify_handler as emg_handler
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -36,7 +36,10 @@ def sync_studies(ena_api, database, cutoff_date):
             logging.error(e)
             logging.error('Could not insert {}'.format(study))
             continue
-    return {study.secondary_accession: study for study in save_or_update_studies(list(studies.values()), database)}
+    logging.info('Storing studies...')
+    studies = {study.secondary_accession: study for study in save_or_update_studies(list(studies.values()), database)}
+    logging.info('Finished storing studies')
+    return studies
 
 
 def save_or_update_runs(runs, database):
@@ -46,7 +49,7 @@ def save_or_update_runs(runs, database):
         del d['id']
         d['study'] = run.study
         runs[i], _ = Run.objects.using(database).update_or_create(primary_accession=d['primary_accession'],
-                                                              defaults=d)
+                                                                  defaults=d)
     return runs
 
 
@@ -62,8 +65,10 @@ def sync_runs(ena_api, database, cutoff_date, studies):
             logging.error(e)
             logging.error('Could not insert {}'.format(run))
             continue
-
-    return {run.primary_accession: run for run in save_or_update_runs(list(runs.values()), database)}
+    logging.info('Storing runs...')
+    runs = {run.primary_accession: run for run in save_or_update_runs(list(runs.values()), database)}
+    logging.info('Finished storing runs')
+    return runs
 
 
 def sync_assemblies(ena_api, database, cutoff_date, studies, runs):
@@ -75,12 +80,13 @@ def sync_assemblies(ena_api, database, cutoff_date, studies, runs):
     for assembly, data in ena_assemblies.items():
         try:
             assembly_obj = emg_handler.create_assembly(ena_api, database, studies, data)
-            assembly_obj.save()
+            assembly_obj.save(using=database)
             assemblies[assembly] = assembly_obj
             insertable_assemblies.append(assembly)
         except Exception as e:
             logging.error(e)
             continue
+    logging.info('Finished storing assemblies')
     link_assemblies_to_runs(ena_api, database, studies, runs, ena_assemblies, assemblies)
     return assemblies
 

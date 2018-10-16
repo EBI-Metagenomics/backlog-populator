@@ -5,12 +5,12 @@ import json
 
 import pytest
 from dateutil.relativedelta import relativedelta
-from src import update
+from backlog_populator import update
 import os
 
 from ..utils import ena_creds_path, write_creds_file, db_name, clear_database, Study, Run, Assembly, \
     ena_api_handler_options, mocked_requests_get, num_fixture_studies, num_fixture_runs, num_fixture_assemblies
-from src import ena_api_handler
+from backlog_populator import ena_api_handler
 
 
 class TestSync(TestCase):
