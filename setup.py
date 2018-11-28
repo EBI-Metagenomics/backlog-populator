@@ -6,6 +6,8 @@ _base = os.path.dirname(os.path.abspath(__file__))
 _requirements = os.path.join(_base, 'requirements.txt')
 _requirements_test = os.path.join(_base, 'requirements-test.txt')
 
+version = '1.0.3'
+
 install_requirements = []
 with open(_requirements) as f:
     install_requirements = f.read().splitlines()
@@ -16,19 +18,22 @@ if "test" in sys.argv:
         test_requirements = f.read().splitlines()
 
 setup(name='emg-backlog-populator',
-      version='1.0.2',
+      version=version,
       description='Utility to sync MGnify backlog schema from ENA ',
       author='Miguel Boland',
       author_email='mdb@ebi.ac.uk',
       url='https://github.com/EBI-Metagenomics/backlog-populator',
       packages=find_packages(),
+      install_requires=install_requirements,
+      include_package_data=True,
+
       install_requirements=[
           'emg-backlog-schema>=0.4.5',
-          'ebi-metagenomics-libs>=0.1.3'
+          'emg-libs>=0.1.3'
       ],
       dependency_links=[
           'https://github.com/EBI-Metagenomics/emg-backlog-schema/tarball/master#egg=emg-backlog-schema-0.4.5',
-          'https://github.com/EBI-Metagenomics/ebi-metagenomics-libs@analysis-request-cli/tarball/master#egg=ebi-metagenomics-libs-0.1.3'
+          'https://github.com/EBI-Metagenomics/ebi-metagenomics-libs/tarball/analysis-request-cli#egg=emg-libs-0.1.3'
       ],
       entry_points={
           'console_scripts': [

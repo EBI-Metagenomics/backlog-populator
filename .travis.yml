@@ -4,9 +4,10 @@ python:
   - '3.5'
   - '3.6'
 env:
-  - DJANGO_BACKLOG_DEFAULT_CONFIG=$TRAVIS_BUILD_DIR/travis/config.yaml
+  - BACKLOG_CONFIG=$TRAVIS_BUILD_DIR/travis/config.yaml
 
 before_install:
+  - pip install 'pytest==3.7.4'
   - pip install -U --process-dependency-links .
   - mysql -e 'CREATE DATABASE emg_backlog_2;'
   - emgbacklog migrate --database=default
