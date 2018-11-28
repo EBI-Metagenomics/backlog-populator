@@ -5,7 +5,9 @@ import os
 import logging
 import sys
 import json
-from backlog_populator import ena_api_handler
+from ena_portal_api import ena_handler
+from mgnify_backlog import mgnify_handler
+
 import backlog_populator.sync as sync
 
 
@@ -32,8 +34,7 @@ ena_creds = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 
 
 def parse_args(raw_args):
     parser = argparse.ArgumentParser(description='Tool to update backlog schema from the ENA API')
-    parser.add_argument('-d', '--database', type=Database, choices=list(Database), default=Database.dev,
-                        help='Target database to update')
+    parser.add_argument('--db', choices=['default', 'dev', 'prod'], default='default')
     parser.add_argument('-r', '--refresh', action="store_true", help='If set update all data')
     parser.add_argument('-e', '--ena-credentials', help='Path to ena credentials yml file')
     parser.add_argument("-c",
@@ -42,7 +43,6 @@ def parse_args(raw_args):
                         type=valid_date)
     parser.add_argument('-v', '--verbose', action='store_true', help='Set logging level to DEBUG')
     args = parser.parse_args(raw_args)
-    args.database = str(args.database)
     return args
 
 
@@ -72,15 +72,30 @@ def main(raw_args=sys.argv[1:]):
     else:
         cutoff = args.cutoffdate
     # Setup ENA API module
-    ena_handler = ena_api_handler.EnaApiHandler(args.ena_credentials or ena_creds)
-    studies = sync.sync_studies(ena_handler, args.database, cutoff)
-    runs = sync.sync_runs(ena_handler, args.database, cutoff, studies)
-    assemblies = sync.sync_assemblies(ena_handler, args.database, cutoff, studies, runs)
-    logging.info('Updated {} studies'.format(len(studies)))
-    logging.info('Updated {} runs'.format(len(runs)))
-    logging.info('Updated {} assemblies'.format(len(assemblies)))
+    ena = ena_handler.EnaApiHandler()
+    mgnify = mgnify_handler.MgnifyHandler(args.db)
+    studies_created, studies_updated, study_errors = sync.sync_studies(ena, mgnify, cutoff)
+    runs_created, runs_updated, run_errors = sync.sync_runs(ena, mgnify, cutoff)
+    assem_created, assem_updated, assem_errors = sync.sync_assemblies(ena, mgnify, cutoff)
 
-    save_cutoff_date(datetime.today().strftime('%Y-%m-%d'))
+    logging.info('Created {} studies'.format(studies_created))
+    logging.info('Updated {} studies'.format(studies_updated))
+    logging.info('Created {} runs'.format(runs_created))
+    logging.info('Updated {} runs'.format(runs_updated))
+    logging.info('Created {} assemblies'.format(assem_created))
+    logging.info('Updated {} assemblies'.format(assem_updated))
+
+    errors = study_errors + run_errors + assem_errors
+    if len(errors) > 10:
+        logging.warning('More than 10 update errors occured, see error.log for details')
+        with open('error.log', 'w') as f:
+            f.writelines([a + ': ' + b for a, b in errors])
+    else:
+        if 0 < len(errors) <= 10:
+            for accession, error in errors:
+                logging.error(accession, error)
+        else:
+            save_cutoff_date(datetime.today().strftime('%Y-%m-%d'))
 
 
 if __name__ == '__main__':

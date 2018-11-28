@@ -1,23 +1,12 @@
-import os
 import yaml
-from datetime import datetime
 from dateutil import relativedelta
-import django.db
 import json
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'db.settings'
-
-django.setup()
-
-from backlog.models import Study, Run, Assembly, RunAssembly
+from mgnify_backlog.mgnify_handler import *
 
 db_name = 'default'
 date_format = '%Y-%m-%d'
-sync_time = relativedelta.relativedelta(weeks=1)
-
-ena_api_handler_options = {
-    'limit': 10
-}
+sync_time = relativedelta.relativedelta(weeks=4)
 
 ena_creds_path = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 'ena_creds_test.yml'))
 
@@ -50,16 +39,28 @@ def date_to_str(date):
 
 
 def clear_database():
-    RunAssembly.objects.using(db_name).all().delete()
-    Assembly.objects.using(db_name).all().delete()
-    Run.objects.using(db_name).all().delete()
-    Study.objects.using(db_name).all().delete()
+    AssemblyJob.objects.all().delete()
+    AssemblyJobStatus.objects.all().delete()
+
+    AnnotationJob.objects.all().delete()
+
+    RunAssembly.objects.all().delete()
+    RunAssemblyJob.objects.all().delete()
+    Run.objects.all().delete()
+    Assembly.objects.all().delete()
+    Study.objects.all().delete()
+
+    UserRequest.objects.all().delete()
+    User.objects.all().delete()
+
+    Pipeline.objects.all().delete()
+    Assembler.objects.all().delete()
 
 
 def fetch_mock_response(filename):
     filepath = os.path.join(os.path.dirname(__file__), 'mock_ena_responses', filename)
-    with open(filepath, 'r') as f:
-        return f.read()
+    with open(filepath) as f:
+        return json.load(f)
 
 
 class MockResponse:
@@ -71,39 +72,33 @@ class MockResponse:
         return self.data
 
 
-# This method will be used by the mock to replace requests.get
-def mocked_requests_get(*args, **kwargs):
-    api_call_result = kwargs['query_params'][0][1]
-    response = MockResponse(None, 404)
-    if api_call_result == 'study':
-        query_filter = kwargs['query_params'][1][1]
-        if "secondary_study_accession" in query_filter:
-            study_fixture = query_filter.replace('secondary_study_accession=', '') + '.json'
-            response = MockResponse(fetch_mock_response(os.path.join('single_studies', study_fixture)), 200)
-        else:
-            response = MockResponse(fetch_mock_response('studies.json'), 200)
-    elif api_call_result == 'read_run':
-        response = MockResponse(fetch_mock_response('runs.json'), 200)
-    elif api_call_result == 'analysis':
-        response = MockResponse(fetch_mock_response('assemblies.json'), 200)
-    return response
+def mocked_ena_study_query(*kwargs):
+    return fetch_mock_response('studies.json')
 
 
-def mock_invalid_study_get_request(*args, **kwargs):
-    api_call_result = kwargs['query_params'][0][1]
-    response = MockResponse(None, 404)
-    if api_call_result == 'study':
-        response = MockResponse(fetch_mock_response(os.path.join('invalid_responses', 'invalid_study.json')), 200)
-    return response
+def mocked_ena_read_run_query(*kwargs):
+    return fetch_mock_response('runs.json')
 
 
-# Run includes 1 lacking read / base count
-def mock_invalid_run_get_request(*args, **kwargs):
-    api_call_result = kwargs['query_params'][0][1]
-    response = MockResponse(None, 404)
-    if api_call_result == 'study':
-        study_fixture = kwargs['query_params'][1][1].replace('secondary_study_accession=', '') + '.json'
-        response = MockResponse(fetch_mock_response(os.path.join('single_studies', study_fixture)), 200)
-    elif api_call_result == 'read_run':
-        response = MockResponse(fetch_mock_response(os.path.join('invalid_responses', 'runs_missing_counts.json')), 200)
-    return response
+def mocked_ena_read_assemblies_query(*kwargs):
+    return fetch_mock_response('assemblies.json')
+
+
+def mocked_ena_read_single_study(*kwargs):
+    return fetch_mock_response('single_studies.json')
+
+
+def mocked_ena_invalid_study_response(*kwargs):
+    return fetch_mock_response('./invalid_responses/invalid_studies.json')
+
+
+def mocked_ena_invalid_runs_response(*kwargs):
+    return fetch_mock_response('./invalid_responses/runs_missing_counts.json')
+
+
+def mocked_ena_assemblies_query(*kwargs):
+    return fetch_mock_response('assemblies.json')
+
+
+def mocked_ena_assembles_multiple_in_same_study_query(*kwargs):
+    return fetch_mock_response('assemblies_same_study.json')

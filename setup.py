@@ -1,11 +1,19 @@
 from setuptools import setup, find_packages
 import os
+import sys
 
 _base = os.path.dirname(os.path.abspath(__file__))
 _requirements = os.path.join(_base, 'requirements.txt')
+_requirements_test = os.path.join(_base, 'requirements-test.txt')
 
+install_requirements = []
 with open(_requirements) as f:
     install_requirements = f.read().splitlines()
+
+test_requirements = []
+if "test" in sys.argv:
+    with open(_requirements_test) as f:
+        test_requirements = f.read().splitlines()
 
 setup(name='emg-backlog-populator',
       version='1.0.2',
@@ -14,13 +22,20 @@ setup(name='emg-backlog-populator',
       author_email='mdb@ebi.ac.uk',
       url='https://github.com/EBI-Metagenomics/backlog-populator',
       packages=find_packages(),
-      setup_requires=['pytest-runner'],
-      tests_require=['pytest'],
-      install_requires=install_requirements,
-      dependency_links=['git+git://github.com/EBI-Metagenomics/emg-backlog-schema.git@master#egg=emg-backlog-schema-0'],
+      install_requirements=[
+          'emg-backlog-schema>=0.4.5',
+          'ebi-metagenomics-libs>=0.1.3'
+      ],
+      dependency_links=[
+          'https://github.com/EBI-Metagenomics/emg-backlog-schema/tarball/master#egg=emg-backlog-schema-0.4.5',
+          'https://github.com/EBI-Metagenomics/ebi-metagenomics-libs@analysis-request-cli/tarball/master#egg=ebi-metagenomics-libs-0.1.3'
+      ],
       entry_points={
           'console_scripts': [
               'backlog_populator=backlog_populator.update:main'
           ]
-      }
+      },
+      tests_require=test_requirements,
+      test_suite="tests",
+      setup_requires=['pytest-runner'],
       )
