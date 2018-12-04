@@ -16,7 +16,7 @@ class TestSync(TestCase):
 
     def test_argparse_should_not_accept_valid_db_names(self):
         try:
-            update.parse_args(['-d', 'illegal_db', '-c', '2018-01-01'])
+            update.parse_args(['--db', 'illegal_db', '-c', '2018-01-01'])
         except SystemExit as e:
             self.assertIsInstance(e.__context__, argparse.ArgumentError)
         else:
@@ -25,8 +25,8 @@ class TestSync(TestCase):
     def test_argparse_should_accept_valid_db_names(self):
         dbs = ['default', 'dev', 'prod']
         for db in dbs:
-            args = update.parse_args(['-d', db, '-c', '2018-01-01'])
-            self.assertEqual(db, args.database)
+            args = update.parse_args(['--db', db, '-c', '2018-01-01'])
+            self.assertEqual(db, args.db)
 
     def test_argparse_should_raise_error_if_invalid_date(self):
         invalid_date = 'invalid_date'

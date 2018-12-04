@@ -1,30 +1,23 @@
 language: python
-
 python:
   - '3.4'
   - '3.5'
   - '3.6'
-  - '3.7'
 env:
-  - DJANGO_BACKLOG_DEFAULT_CONFIG=$TRAVIS_BUILD_DIR/travis/config.yaml
+  - BACKLOG_CONFIG=$TRAVIS_BUILD_DIR/travis/config.yaml
 
 before_install:
-  - pip3 install codacy-coverage
-  - pip3 install pytest
-  - pip3 install pytest-cov
-  - pip3 install -U git+git://github.com/EBI-Metagenomics/emg-backlog-schema.git
+  - pip install 'pytest==3.7.4'
+  - pip install -U --process-dependency-links .
   - mysql -e 'CREATE DATABASE emg_backlog_2;'
   - emgbacklog migrate --database=default
 
 install:
   - $TRAVIS_BUILD_DIR/travis/create_ena_creds.sh
-  - pip3 install -r requirements.txt
-  - pip3 install "flake8==3.4" "pycodestyle==2.3.1" pep8-naming
-
-# before_script:
-  # - flake8 -v .
 
 script:
-  - pytest --cov=backlog_populator tests/
-  - coverage xml -o $TRAVIS_BUILD_DIR/coverage.xml
-  - python-codacy-coverage -r $TRAVIS_BUILD_DIR/coverage.xml
+  - python setup.py test
+
+after_success:
+  - pip install codacy-coverage
+  - python-codacy-coverage -r coverage.xml

@@ -1,0 +1,38 @@
+[
+  {
+    "accession": "GCA_900205986",
+    "assembly_level": "contig",
+    "assembly_name": "ERR974991",
+    "assembly_title": "SRS024378 assembly for human metagenome",
+    "base_count": "13841299",
+    "genome_representation": "full",
+    "sample_accession": "SAMN00045596",
+    "scientific_name": "human metagenome",
+    "secondary_sample_accession": "SRS024377",
+    "strain": "",
+    "study_accession": "PRJEB22283",
+    "study_description": "Study description",
+    "study_name": "human metagenome metagenomic assembly",
+    "study_title": "EMG produced TPA metagenomics assembly of the Human Microbiome Project (HMP) Metagenomic WGS Projects, deeper sequencing of the human microbiome samples: Production Phase (human metagenome) data set",
+    "tax_id": "646099",
+    "last_updated": "2018-01-02"
+  },
+  {
+    "accession": "GCA_900205985",
+    "assembly_level": "contig",
+    "assembly_name": "ERR974990",
+    "assembly_title": "SRS024377 assembly for human metagenome",
+    "base_count": "13841299",
+    "genome_representation": "full",
+    "sample_accession": "SAMN00045595",
+    "scientific_name": "human metagenome",
+    "secondary_sample_accession": "SRS024377",
+    "strain": "",
+    "study_accession": "PRJEB22283",
+    "study_description": "Study description",
+    "study_name": "human metagenome metagenomic assembly",
+    "study_title": "EMG produced TPA metagenomics assembly of the Human Microbiome Project (HMP) Metagenomic WGS Projects, deeper sequencing of the human microbiome samples: Production Phase (human metagenome) data set",
+    "tax_id": "646099",
+    "last_updated": "2018-01-02"
+  }
+]

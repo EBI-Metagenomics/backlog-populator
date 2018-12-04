@@ -1,87 +1,70 @@
 from unittest import TestCase, mock
+from unittest.mock import patch
 from datetime import datetime
 import sys
+import os
 import json
-
 import pytest
 from dateutil.relativedelta import relativedelta
 from backlog_populator import update
-import os
 
-from ..utils import ena_creds_path, write_creds_file, db_name, clear_database, Study, Run, Assembly, \
-    ena_api_handler_options, mocked_requests_get, num_fixture_studies, num_fixture_runs, num_fixture_assemblies
-from backlog_populator import ena_api_handler
+from ..utils import clear_database, Study, Run, Assembly, mocked_ena_study_query, mocked_ena_read_run_query, \
+    mocked_ena_assemblies_query
+
+from ena_portal_api import ena_handler
 
 
 class TestSync(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        write_creds_file()
-
     def setUp(self):
         clear_database()
 
-    @mock.patch('swagger_client.ApiClient.request', new=mocked_requests_get)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_studies', mocked_ena_study_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_runs', mocked_ena_read_run_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_assemblies', mocked_ena_assemblies_query)
     def test_main(self):
         cutoff = (datetime.now().date() - relativedelta(days=1)).strftime('%Y-%m-%d')
-        update.main(['-c', cutoff, '--database', 'default'])
-        ena_handler = ena_api_handler.EnaApiHandler(ena_creds_path, ena_api_handler_options)
-        studies = ena_handler.get_updated_studies(cutoff)
-        runs = ena_handler.get_updated_runs(cutoff)
-        assemblies = ena_handler.get_updated_assemblies(cutoff)
+        update.main(['-c', cutoff, '--db', 'default'])
+        db_studies = Study.objects.all()
+        db_runs = Run.objects.all()
+        db_assemblies = Assembly.objects.all()
+        self.assertEqual(len(db_studies), 11)
+        self.assertEqual(len(db_runs), 11)
+        self.assertEqual(len(db_assemblies), 5)
 
-        db_studies = Study.objects.using(db_name).all()
-        db_runs = Run.objects.using(db_name).all()
-        db_assemblies = Assembly.objects.using(db_name).all()
-
-        self.assertEqual(len(studies), num_fixture_studies)
-        self.assertEqual(len(db_studies), num_fixture_studies)
-        self.assertEqual(len(runs), num_fixture_runs)
-        self.assertEqual(len(db_runs), num_fixture_runs)
-        self.assertEqual(len(assemblies), num_fixture_assemblies)
-        self.assertEqual(len(db_assemblies), num_fixture_assemblies)
-
-    @mock.patch('swagger_client.ApiClient.request', new=mocked_requests_get)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_studies', mocked_ena_study_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_runs', mocked_ena_read_run_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_assemblies', mocked_ena_assemblies_query)
     def test_main_should_write_cutoff_json(self):
         cutoff = (datetime.now().date() - relativedelta(days=1)).strftime('%Y-%m-%d')
-        update.main(['-c', cutoff, '--database', 'default'])
+        update.main(['-c', cutoff, '--db', 'default'])
         self.assertTrue(os.path.exists(update.cutoff_file))
         with open(update.cutoff_file, 'r') as f:
             self.assertEqual(json.load(f)['cutoff-date'], datetime.today().strftime('%Y-%m-%d'))
 
-    @mock.patch('swagger_client.ApiClient.request', new=mocked_requests_get)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_studies', mocked_ena_study_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_runs', mocked_ena_read_run_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_assemblies', mocked_ena_assemblies_query)
     def test_main_should_read_cutoff_json(self):
         cutoff = (datetime.now().date() - relativedelta(days=1)).strftime('%Y-%m-%d')
         with open(update.cutoff_file, 'w') as f:
             json.dump({'cutoff-date': cutoff}, f)
         self.assertTrue(os.path.exists(update.cutoff_file))
-        update.main(['--database', 'default'])
+
+        update.main(['--db', 'default'])
+
         with open(update.cutoff_file, 'r') as f:
             self.assertEqual(json.load(f)['cutoff-date'], datetime.today().strftime('%Y-%m-%d'))
 
-        ena_handler = ena_api_handler.EnaApiHandler(ena_creds_path, ena_api_handler_options)
-        studies = ena_handler.get_updated_studies(cutoff)
-        runs = ena_handler.get_updated_runs(cutoff)
-        assemblies = ena_handler.get_updated_assemblies(cutoff)
-
-        db_studies = Study.objects.using(db_name).all()
-        db_runs = Run.objects.using(db_name).all()
-        db_assemblies = Assembly.objects.using(db_name).all()
-
-        self.assertEqual(len(studies), num_fixture_studies)
-        self.assertEqual(len(db_studies), num_fixture_studies)
-        self.assertEqual(len(runs), num_fixture_runs)
-        self.assertEqual(len(db_runs), num_fixture_runs)
-        self.assertEqual(len(assemblies), num_fixture_assemblies)
-        self.assertEqual(len(db_assemblies), num_fixture_assemblies)
+        db_studies = Study.objects.all()
+        db_runs = Run.objects.all()
+        db_assemblies = Assembly.objects.all()
+        self.assertEqual(len(db_studies), 11)
+        self.assertEqual(len(db_runs), 11)
+        self.assertEqual(len(db_assemblies), 5)
 
     def tearDown(self):
-        clear_database()
-
-    @classmethod
-    def tearDownClass(cls):
-        if os.path.exists(ena_creds_path):
-            os.remove(ena_creds_path)
+        pass
+        # clear_database()
 
 
 def test_main_python_vers():
@@ -89,4 +72,4 @@ def test_main_python_vers():
         with mock.patch.object(sys, 'version_info') as v_info:
             v_info.major = 2
             cutoff = (datetime.now().date() - relativedelta(days=1)).strftime('%Y-%m-%d')
-            update.main(['-c', cutoff, '--database', 'default'])
+            update.main(['-c', cutoff, '--db', 'default'])
