@@ -9,7 +9,7 @@ from mgnify_backlog import mgnify_handler
 
 import backlog_populator.sync as sync
 
-ena_creds = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 'ena_creds.yml'))
+ena_creds = os.environ.get('ENA_CREDS_FILE')
 cutoff_file = os.environ.get('BACKLOG_SYNC_CUTOFF_FILE', os.path.join(os.path.dirname(__file__), 'cutoff.json'))
 
 
