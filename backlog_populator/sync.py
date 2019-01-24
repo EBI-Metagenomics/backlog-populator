@@ -11,22 +11,18 @@ def sync_studies(ena_api, mgnify, cutoff_date):
     logging.info('Syncing studies')
     ena_studies = ena_api.get_updated_studies(cutoff_date)
     logging.info('Found {} new studies'.format(str(len(ena_studies))))
-    count_created = 0
-    count_updated = 0
     errors = []
     for study_data in ena_studies:
         try:
             mgnify.create_study_obj(study_data)
-            count_created += 1
         except django.db.utils.IntegrityError:
             mgnify.update_study_obj(study_data)
-            count_updated += 1
         except Exception as e:
             logging.debug(e)
             logging.debug('Could not insert {}'.format(study_data))
             errors.append((study_data['secondary_study_accession'], e))
             continue
-    return count_created, count_updated, errors
+    return errors
 
 
 def sync_runs(ena_api, mgnify, cutoff_date):
@@ -34,8 +30,6 @@ def sync_runs(ena_api, mgnify, cutoff_date):
     ena_runs = ena_api.get_updated_runs(cutoff_date)
     logging.info('Found {} new runs'.format(str(len(ena_runs))))
     study_cache = {}
-    count_created = 0
-    count_updated = 0
     errors = []
     for run_data in ena_runs:
         study_prim_accession = run_data['study_accession']
@@ -51,17 +45,15 @@ def sync_runs(ena_api, mgnify, cutoff_date):
             study_cache[study_prim_accession] = study
         try:
             mgnify.create_run_obj(study, run_data)
-            count_created += 1
         except django.db.utils.IntegrityError:
             mgnify.update_run_obj(run_data)
-            count_updated += 1
         except (django.core.exceptions.ValidationError, ValueError, KeyError) as e:
             logging.debug(e)
             logging.debug('Could not insert {}'.format(run_data))
             errors.append((run_data['run_accession'], e))
             continue
 
-    return count_created, count_updated, errors
+    return errors
 
 
 def sync_assemblies(ena_api, mgnify, cutoff_date):
@@ -69,8 +61,6 @@ def sync_assemblies(ena_api, mgnify, cutoff_date):
     ena_assemblies = ena_api.get_updated_assemblies(cutoff_date)
     logging.info('Found {} new assemblies'.format(str(len(ena_assemblies))))
     study_cache = {}
-    count_created = 0
-    count_updated = 0
     errors = []
     for assembly_data in ena_assemblies:
         study_prim_accession = assembly_data['study_accession']
@@ -88,12 +78,10 @@ def sync_assemblies(ena_api, mgnify, cutoff_date):
             assembly_data['related_runs'] = [run_obj]
         try:
             mgnify.create_assembly_obj(study, assembly_data)
-            count_created += 1
         except django.db.utils.IntegrityError:
             mgnify.update_assembly_obj(assembly_data)
-            count_updated += 1
         except Exception as e:
             logging.debug(e)
             logging.debug('Could not insert assembly {}'.format(assembly_data))
             errors.append((assembly_data['accession'], e))
-    return count_created, count_updated, errors
+    return errors

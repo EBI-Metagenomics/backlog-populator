@@ -26,13 +26,9 @@ setup(name='emg-backlog-populator',
       packages=find_packages(),
       install_requires=install_requirements,
       include_package_data=True,
-      install_requirements=[
-          'emg-backlog-schema>=0.5.2',
-          'emg-libs>=0.1.8'
-      ],
       dependency_links=[
           'https://github.com/EBI-Metagenomics/emg-backlog-schema/tarball/master#egg=emg-backlog-schema-0.5.2',
-          'https://github.com/EBI-Metagenomics/ebi-metagenomics-libs/tarball/master#egg=emg-libs-0.1.8'
+          'https://github.com/EBI-Metagenomics/ebi-metagenomics-libs/tarball/master#egg=emg-libs-0.1.9'
       ],
       entry_points={
           'console_scripts': [
