@@ -26,7 +26,6 @@ def parse_args(raw_args):
     parser = argparse.ArgumentParser(description='Tool to update backlog schema from the ENA API')
     parser.add_argument('--db', choices=['default', 'dev', 'prod'], default='default')
     parser.add_argument('-r', '--refresh', action="store_true", help='If set update all data')
-    parser.add_argument('-e', '--ena-credentials', help='Path to ena credentials yml file')
     parser.add_argument("-c",
                         "--cutoffdate",
                         help="The Start Date - format YYYY-MM-DD",
