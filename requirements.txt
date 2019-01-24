@@ -1,6 +1,6 @@
-Django==1.11.13
-PyYAML==3.12
-mysql-connector-python-rf==2.2.2
-python-dateutil==2.7.2
+Django~=1.11.13
+PyYAML~=3.12
+mysql-connector-python-rf~=2.2.2
+python-dateutil~=2.7.2
 emg-backlog-schema>=0.5.2
 emg-libs>=0.1.9
