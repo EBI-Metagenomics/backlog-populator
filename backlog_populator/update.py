@@ -9,6 +9,9 @@ from mgnify_backlog import mgnify_handler
 
 import backlog_populator.sync as sync
 
+ena_creds = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 'ena_creds.yml'))
+cutoff_file = os.environ.get('BACKLOG_SYNC_CUTOFF_FILE', os.path.join(os.path.dirname(__file__), 'cutoff.json'))
+
 
 def valid_date(s):
     try:
@@ -17,9 +20,6 @@ def valid_date(s):
     except ValueError:
         msg = "Not a valid date: '{0}'.".format(s)
         raise argparse.ArgumentTypeError(msg)
-
-
-ena_creds = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, 'ena_creds.yml'))
 
 
 def parse_args(raw_args):
@@ -34,9 +34,6 @@ def parse_args(raw_args):
     parser.add_argument('-v', '--verbose', action='store_true', help='Set logging level to DEBUG')
     args = parser.parse_args(raw_args)
     return args
-
-
-cutoff_file = os.environ.get('BACKLOG_SYNC_CUTOFF_FILE', os.path.join(os.path.dirname(__file__), 'cutoff.json'))
 
 
 def load_cutoff_date():
@@ -71,7 +68,8 @@ def display_update_stats(db, num_studies, num_runs, num_assemblies):
     created_runs = new_runs.count() - num_runs
     created_assemblies = new_assemblies.count() - num_assemblies
 
-    updated_studies = new_studies.filter(ena_last_update=datetime.today().strftime('%Y-%m-%d')).count() - created_studies
+    updated_studies = new_studies.filter(
+        ena_last_update=datetime.today().strftime('%Y-%m-%d')).count() - created_studies
     updated_runs = new_runs.filter(ena_last_update=datetime.today().strftime('%Y-%m-%d')).count() - created_runs
     updated_assemblies = new_assemblies.filter(
         ena_last_update=datetime.today().strftime('%Y-%m-%d')).count() - created_assemblies
