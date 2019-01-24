@@ -1,5 +1,4 @@
 import argparse
-from enum import Enum
 from datetime import datetime
 import os
 import logging
@@ -9,15 +8,6 @@ from ena_portal_api import ena_handler
 from mgnify_backlog import mgnify_handler
 
 import backlog_populator.sync as sync
-
-
-class Database(Enum):
-    prod = 'prod'
-    dev = 'dev'
-    default = 'default'
-
-    def __str__(self):
-        return self.value
 
 
 def valid_date(s):
@@ -46,7 +36,7 @@ def parse_args(raw_args):
     return args
 
 
-cutoff_file = os.path.join(os.path.dirname(__file__), 'cutoff.json')
+cutoff_file = os.environ.get('BACKLOG_SYNC_CUTOFF_FILE', os.path.join(os.path.dirname(__file__), 'cutoff.json'))
 
 
 def load_cutoff_date():

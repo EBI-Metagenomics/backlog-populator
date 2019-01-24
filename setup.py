@@ -6,7 +6,7 @@ _base = os.path.dirname(os.path.abspath(__file__))
 _requirements = os.path.join(_base, 'requirements.txt')
 _requirements_test = os.path.join(_base, 'requirements-test.txt')
 
-version = '1.0.3'
+version = '1.1.0'
 
 install_requirements = []
 with open(_requirements) as f:
@@ -26,14 +26,13 @@ setup(name='emg-backlog-populator',
       packages=find_packages(),
       install_requires=install_requirements,
       include_package_data=True,
-
       install_requirements=[
-          'emg-backlog-schema>=0.4.5',
-          'emg-libs>=0.1.3'
+          'emg-backlog-schema>=0.5.2',
+          'emg-libs>=0.1.8'
       ],
       dependency_links=[
-          'https://github.com/EBI-Metagenomics/emg-backlog-schema/tarball/master#egg=emg-backlog-schema-0.4.5',
-          'https://github.com/EBI-Metagenomics/ebi-metagenomics-libs/tarball/analysis-request-cli#egg=emg-libs-0.1.3'
+          'https://github.com/EBI-Metagenomics/emg-backlog-schema/tarball/master#egg=emg-backlog-schema-0.5.2',
+          'https://github.com/EBI-Metagenomics/ebi-metagenomics-libs/tarball/master#egg=emg-libs-0.1.8'
       ],
       entry_points={
           'console_scripts': [
