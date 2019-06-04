@@ -79,8 +79,8 @@ class Updater:
         self.biome_classifier = load_classifier.get_model()
 
     def sync_all(self):
-        # study_errors = self.sync_studies()
-        # run_errors = self.sync_runs()
+        study_errors = self.sync_studies()
+        run_errors = self.sync_runs()
         assem_errors = self.sync_mgnify_assemblies()
 
         self.display_update_stats()

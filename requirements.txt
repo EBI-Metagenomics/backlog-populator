@@ -4,3 +4,4 @@ mysql-connector-python-rf~=2.2.2
 python-dateutil~=2.7.2
 emg-backlog-schema>=0.5.2
 emg-libs>=0.1.9
+tqdm==4.23.4
