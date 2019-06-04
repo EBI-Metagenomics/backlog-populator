@@ -8,9 +8,11 @@ env:
 
 before_install:
   - pip install 'pytest==3.7.4'
-  - pip install -U --process-dependency-links .
+  - pip install -U git+git://github.com/EBI-Metagenomics/emg-backlog-schema.git@develop
+  - pip install -U git+git://github.com/EBI-Metagenomics/biome_prediction.git;
   - mysql -e 'CREATE DATABASE emg_backlog_2;'
   - emgbacklog migrate --database=default
+  - mysql -u root --password="" --database=emg_backlog_2 < travis/biomes.sql
 
 install:
   - $TRAVIS_BUILD_DIR/travis/create_ena_creds.sh

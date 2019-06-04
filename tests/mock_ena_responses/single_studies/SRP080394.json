@@ -2,12 +2,13 @@
   {
     "study_accession": "PRJNA330363",
     "secondary_study_accession": "SRP080394",
-    "study_description": "Marine microbial communities from expanding oxygen minimum zones in Line P, North Pacific Ocean - fosmids plate 1 metagenome",
+    "description": "Marine microbial communities from expanding oxygen minimum zones in Line P, North Pacific Ocean - fosmids plate 1 metagenome",
     "study_name": "marine metagenome",
     "study_title": "Marine microbial communities from expanding oxygen minimum zones in Line P, North Pacific Ocean - fosmids plate 1 metagenome",
     "center_name": "BioProject",
     "broker_name": "",
     "last_updated": "2017-04-21",
-    "first_public": "2016-07-31"
+    "first_public": "2016-07-31",
+    "scientific_name": "sci_name"
   }
 ]

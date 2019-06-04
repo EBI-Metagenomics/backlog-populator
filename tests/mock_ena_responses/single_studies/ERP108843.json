@@ -2,11 +2,12 @@
   {
     "study_accession": "PRJEB26820",
     "secondary_study_accession": "ERP108843",
-    "study_description": "The marine metagenome Third Party Annotation (TPA) assembly was derived from the primary whole genome shotgun (WGS) data set: PRJNA330363.  This project includes samples from the following biomes: Environmental, Aquatic, Marine.",
+    "description": "The marine metagenome Third Party Annotation (TPA) assembly was derived from the primary whole genome shotgun (WGS) data set: PRJNA330363.  This project includes samples from the following biomes: Environmental, Aquatic, Marine.",
     "study_name": null,
     "study_title": "EMG produced TPA metagenomics assembly of the Marine microbial communities from expanding oxygen minimum zones in Line P, North Pacific Ocean - fosmids plate 1 metagenome (marine metagenome) data set.",
     "center_name": "EMG",
     "broker_name": "EBI-EMG",
-    "last_updated": "2018-05-18"
+    "last_updated": "2018-05-18",
+    "scientific_name": "sci_name"
   }
 ]

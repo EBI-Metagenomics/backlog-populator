@@ -21,7 +21,7 @@ class TestSync:
 
     @patch.object(ena_handler.EnaApiHandler, 'get_updated_studies', mocked_ena_study_query)
     @patch.object(ena_handler.EnaApiHandler, 'get_updated_runs', mocked_ena_read_run_query)
-    @patch.object(ena_handler.EnaApiHandler, 'get_updated_assemblies', mocked_ena_assemblies_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_mgnify_assemblies', mocked_ena_assemblies_query)
     def test_main(self):
         cutoff = (datetime.now().date() - relativedelta(days=1)).strftime('%Y-%m-%d')
         update.main(['-c', cutoff, '--db', 'default'])
@@ -34,7 +34,7 @@ class TestSync:
 
     @patch.object(ena_handler.EnaApiHandler, 'get_updated_studies', mocked_ena_study_query)
     @patch.object(ena_handler.EnaApiHandler, 'get_updated_runs', mocked_ena_read_run_query)
-    @patch.object(ena_handler.EnaApiHandler, 'get_updated_assemblies', mocked_ena_assemblies_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_mgnify_assemblies', mocked_ena_assemblies_query)
     def test_main_should_write_cutoff_json(self, tmpdir):
         cutoff_file = os.path.join(str(tmpdir), 'cutoff.json')
         update.cutoff_file = cutoff_file
@@ -47,7 +47,7 @@ class TestSync:
 
     @patch.object(ena_handler.EnaApiHandler, 'get_updated_studies', mocked_ena_study_query)
     @patch.object(ena_handler.EnaApiHandler, 'get_updated_runs', mocked_ena_read_run_query)
-    @patch.object(ena_handler.EnaApiHandler, 'get_updated_assemblies', mocked_ena_assemblies_query)
+    @patch.object(ena_handler.EnaApiHandler, 'get_updated_mgnify_assemblies', mocked_ena_assemblies_query)
     def test_main_should_read_cutoff_json(self, tmpdir):
         cutoff_file = os.path.join(str(tmpdir), 'cutoff.json')
         update.cutoff_file = cutoff_file

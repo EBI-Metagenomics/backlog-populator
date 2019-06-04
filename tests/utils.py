@@ -2,6 +2,16 @@ import yaml
 from dateutil import relativedelta
 import json
 
+
+import django.db
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+import os
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'backlog_cli.settings'
+
+django.setup()
+
 from mgnify_backlog.mgnify_handler import *
 
 db_name = 'default'
@@ -39,22 +49,22 @@ def date_to_str(date):
 
 
 def clear_database():
-    AssemblyJob.objects.all().delete()
-    AssemblyJobStatus.objects.all().delete()
+    AssemblyJob.objects.using(db_name).all().delete()
+    AssemblyJobStatus.objects.using(db_name).all().delete()
 
-    AnnotationJob.objects.all().delete()
+    AnnotationJob.objects.using(db_name).all().delete()
 
-    RunAssembly.objects.all().delete()
-    RunAssemblyJob.objects.all().delete()
-    Run.objects.all().delete()
-    Assembly.objects.all().delete()
-    Study.objects.all().delete()
+    RunAssembly.objects.using(db_name).all().delete()
+    RunAssemblyJob.objects.using(db_name).all().delete()
+    Run.objects.using(db_name).all().delete()
+    Assembly.objects.using(db_name).all().delete()
+    Study.objects.using(db_name).all().delete()
 
-    UserRequest.objects.all().delete()
-    User.objects.all().delete()
+    UserRequest.objects.using(db_name).all().delete()
+    User.objects.using(db_name).all().delete()
 
-    Pipeline.objects.all().delete()
-    Assembler.objects.all().delete()
+    Pipeline.objects.using(db_name).all().delete()
+    Assembler.objects.using(db_name).all().delete()
 
 
 def fetch_mock_response(filename):
@@ -72,33 +82,33 @@ class MockResponse:
         return self.data
 
 
-def mocked_ena_study_query(*kwargs):
+def mocked_ena_study_query(*args, **kwargs):
     return fetch_mock_response('studies.json')
 
 
-def mocked_ena_read_run_query(*kwargs):
+def mocked_ena_read_run_query(*args, **kwargs):
     return fetch_mock_response('runs.json')
 
 
-def mocked_ena_read_assemblies_query(*kwargs):
+def mocked_ena_read_assemblies_query(*args, **kwargs):
     return fetch_mock_response('assemblies.json')
 
 
-def mocked_ena_read_single_study(*kwargs):
+def mocked_ena_read_single_study(*args, **kwargs):
     return fetch_mock_response('single_studies.json')
 
 
-def mocked_ena_invalid_study_response(*kwargs):
+def mocked_ena_invalid_study_response(*args, **kwargs):
     return fetch_mock_response('./invalid_responses/invalid_studies.json')
 
 
-def mocked_ena_invalid_runs_response(*kwargs):
+def mocked_ena_invalid_runs_response(*args, **kwargs):
     return fetch_mock_response('./invalid_responses/runs_missing_counts.json')
 
 
-def mocked_ena_assemblies_query(*kwargs):
+def mocked_ena_assemblies_query(*args, **kwargs):
     return fetch_mock_response('assemblies.json')
 
 
-def mocked_ena_assembles_multiple_in_same_study_query(*kwargs):
+def mocked_ena_assembles_multiple_in_same_study_query(*args, **kwargs):
     return fetch_mock_response('assemblies_same_study.json')

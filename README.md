@@ -4,5 +4,7 @@
 # backlog-populator
 Installation as pip package
 ```bash
-pip install -U --process-dependency-links git+git://github.com/EBI-Metagenomics/backlog-populator.git
+pip install -U git+git://github.com/EBI-Metagenomics/emg-backlog-schema.git@develop
+pip install -U git+git://github.com/EBI-Metagenomics/biome_prediction.git;
+pip install -U git+git://github.com/EBI-Metagenomics/backlog-populator.git
 ```

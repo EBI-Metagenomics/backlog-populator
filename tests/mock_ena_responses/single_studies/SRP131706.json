@@ -2,12 +2,13 @@
   {
     "study_accession": "PRJNA431952",
     "secondary_study_accession": "SRP131706",
-    "study_description": "Our current knowledge regarding microbial response to metail(loid)s contamination in extremely contaminated sites is relatively limited. However, understanding the microbial community response in such situations will reveal ecological strategies in extreme habitats, and expand our understanding of life on Earth. In this study, we investigated how the microbial communities in tailing ponds are shaped by heavy metal(loid)s such as Cd, Cu, Pb, As, and Sb.",
+    "description": "Our current knowledge regarding microbial response to metail(loid)s contamination in extremely contaminated sites is relatively limited. However, understanding the microbial community response in such situations will reveal ecological strategies in extreme habitats, and expand our understanding of life on Earth. In this study, we investigated how the microbial communities in tailing ponds are shaped by heavy metal(loid)s such as Cd, Cu, Pb, As, and Sb.",
     "study_name": "tailing ponds sediment",
     "study_title": "tailing ponds sediment Raw sequence reads",
     "center_name": "BioProject",
     "broker_name": null,
     "last_updated": "2018-01-31",
-    "first_public": "2018-01-31"
+    "first_public": "2018-01-31",
+    "scientific_name": "sci_name"
   }
 ]

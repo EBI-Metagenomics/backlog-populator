@@ -2,12 +2,13 @@
   {
     "study_accession": "PRJNA445564",
     "secondary_study_accession": "SRP141386",
-    "study_description": "Isolated Synechococcus cultures frequently contain associated heterotrophic bacteria, and present a good and relevant research system to investigate the interactions of photoautotrophs-heterotrophs. Metagenomic sequences from microbial community co-cultured with a Synechococcus XM-24.",
+    "description": "Isolated Synechococcus cultures frequently contain associated heterotrophic bacteria, and present a good and relevant research system to investigate the interactions of photoautotrophs-heterotrophs. Metagenomic sequences from microbial community co-cultured with a Synechococcus XM-24.",
     "study_name": "marine metagenome",
     "study_title": "Synechococcus and Synechococcus-associated heterotrophic bacteria genome sequencing",
     "center_name": "BioProject",
     "broker_name": "",
     "last_updated": "2018-04-21",
-    "first_public": "2018-04-21"
+    "first_public": "2018-04-21",
+    "scientific_name": "sci_name"
   }
 ]
