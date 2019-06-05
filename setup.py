@@ -32,7 +32,7 @@ setup(name='emg-backlog-populator',
       ],
       entry_points={
           'console_scripts': [
-              'backlog_populator=backlog_populator.update:main'
+              'backlog_populator=src.update:main'
           ]
       },
       tests_require=test_requirements,
