@@ -1,5 +1,5 @@
-Django~=1.11.13
-PyYAML~=3.12
+Django~=1.11.20
+PyYAML~=5.1
 mysql-connector-python-rf~=2.2.2
 python-dateutil~=2.7.2
 emg-backlog-schema>=0.5.2

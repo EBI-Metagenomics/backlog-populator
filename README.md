@@ -5,6 +5,7 @@
 Installation as pip package
 ```bash
 pip install -U git+git://github.com/EBI-Metagenomics/emg-backlog-schema.git@develop
+pip install -U git+git://github.com/EBI-Metagenomics/ebi-metagenomics-libs.git;
 pip install -U git+git://github.com/EBI-Metagenomics/biome_prediction.git;
 pip install -U git+git://github.com/EBI-Metagenomics/backlog-populator.git
 ```
