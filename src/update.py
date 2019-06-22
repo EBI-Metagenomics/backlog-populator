@@ -4,7 +4,6 @@ import sys
 import json
 import traceback
 
-from tqdm import tqdm
 import django
 import logging
 from datetime import datetime
@@ -104,7 +103,7 @@ class Updater:
         ena_studies = self.ena_api.get_updated_studies(self.cutoff, fields=DEFAULT_STUDY_FIELDS)
         logging.info('Found {} new studies'.format(str(len(ena_studies))))
         errors = []
-        for study_data in tqdm(ena_studies):
+        for study_data in ena_studies:
             try:
                 self.mgnify.create_study_obj(study_data)
             except django.db.utils.IntegrityError:
@@ -122,7 +121,7 @@ class Updater:
         logging.info('Found {} new runs'.format(str(len(ena_runs))))
         study_cache = {}
         errors = []
-        for run_data in tqdm(ena_runs):
+        for run_data in ena_runs:
 
             study_prim_accession = run_data['study_accession']
             study_sec_accession = run_data['secondary_study_accession']
@@ -164,7 +163,7 @@ class Updater:
         logging.info('Found {} new assemblies'.format(str(len(ena_assemblies))))
         study_cache = {}
         errors = []
-        for assembly_data in tqdm(ena_assemblies):
+        for assembly_data in ena_assemblies:
             study_prim_accession = assembly_data['study_accession']
             if study_prim_accession in study_cache:
                 study = study_cache[study_prim_accession]
