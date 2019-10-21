@@ -1,4 +1,4 @@
-Django==1.11.13
+Django==1.11.23
 PyYAML==3.12
 mysql-connector-python-rf==2.2.2
 python-dateutil==2.7.2
